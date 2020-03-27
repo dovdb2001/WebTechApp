@@ -1,0 +1,22 @@
+{
+  "name": "webapp",
+  "version": "1.0.0",
+  "description": "webtech assignment 3",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/michb155/WebTechApp.git"
+  },
+  "author": "Michael Bijker",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/michb155/WebTechApp/issues"
+  },
+  "homepage": "https://github.com/michb155/WebTechApp#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
