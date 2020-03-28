@@ -18,7 +18,7 @@ app.use(session({
     saveUninitialized: false
 }));
 
-var dbfile = path.join(__dirname, "/main.db");
+var dbfile = path.join(__dirname, "/database/main.db");
 //var db = new sqlite3.Database(dbfile);
 //db.close();
 
