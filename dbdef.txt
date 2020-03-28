@@ -7,7 +7,7 @@ CREATE TABLE student
     programme CHAR(22) NOT NULL,
     academic_level CHAR(3) NOT NULL,
     
-    PRIMARY KEY (student_number);
+    PRIMARY KEY (student_number)
 );
 
 CREATE TABLE course

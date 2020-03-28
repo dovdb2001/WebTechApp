@@ -32,7 +32,7 @@ app.get("/", (req, res) => {
     console.log(req.session.user);
 
     var db = new sqlite3.Database(dbfile);
-    db.each("", (err, row) => {
+    db.each("SELECT * FROM student WHERE first_name = 'Michael'", (err, row) => {
         console.log(row);
     });
     db.close();
