@@ -1,19 +1,44 @@
 CREATE TABLE student
 (
-
+    student_number INTERGER NOT NULL,
+    password CHAR(255) NOT NULL,
+    first_name CHAR(255) NOT NULL,
+    last_name CHAR(255) NOT NULL,
+    programme CHAR(22) NOT NULL,
+    academic_level CHAR(3) NOT NULL,
+    
+    PRIMARY KEY (student_number);
 );
 
 CREATE TABLE course
 (
-
-);
-
-CREATE TABLE enrolled
-(
-
+    title CHAR(49) NOT NULL,
+    code CHAR(9) NOT NULL,
+    programme CHAR(22) NOT NULL,
+    level CHAR(3) NOT NULL,
+    faculty CHAR (4) NOT NULL,
+    semester INTERGER NOT NULL,
+    teacher CHAR(255) NOT NULL,
+    description CHAR(2000) NOT NULL,
+    
+    PRIMARY KEY (code)
 );
 
 CREATE TABLE image
 (
+    course_code CHAR(9) NOT NULL,
+    image BLOB NOT NULL,
+    
+    PRIMARY KEY (course_code),
+    FOREIGN KEY (course_code) REFERENCES course (course_code)
+);
 
+CREATE TABLE enrolled
+(
+    student_number INTERGER NOT NULL,
+    course_code CHAR(9) NOT NULL,
+    
+    PRIMARY KEY (student_number, course_code),
+    FOREIGN KEY (student_number) REFERENCES student (student_number),
+    FOREIGN KEY (course_code) REFERENCES course (code)
 );
