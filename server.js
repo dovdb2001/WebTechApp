@@ -4,7 +4,6 @@ const path = require("path");
 const bcrypt = require("bcryptjs");
 const session = require("express-session");
 const sqlite3 = require("sqlite3").verbose();
-const fs = require("fs");
 
 const app = express();
 const server = app.listen (3000);
@@ -29,16 +28,23 @@ app.get("/main.css", (req, res) => {
 
 
 app.get("/", (req, res) => {
-    console.log(req.session.user);
+    console.log("session user: " + req.session.user);
 
     var db = new sqlite3.Database(dbfile);
-    db.each("SELECT * FROM student WHERE first_name = 'Michael'", (err, row) => {
-        console.log(row);
+    var exists;
+    db.serialize(() => {
+        db.all("SELECT * FROM student WHERE student_number = " + 6812172, (err, rows) => {
+            if (rows.length > 0) {
+                console.log(true);
+            } else {
+                console.log(false);
+            }
+        });
+
     });
     db.close();
 
-
-
+    console.log("f my life");
 
     res.sendFile(path.join(__dirname, "/views/index.html"));
 });
@@ -68,6 +74,7 @@ app.get("/logout", (req, res) => {
 });
 
 app.post("/register", async (req, res) => {
+    console.log(req.body.level);
     try {
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
         users.push({
@@ -80,7 +87,6 @@ app.post("/register", async (req, res) => {
     } catch {
         res.redirect("/register");
     }
-    console.log(users);
 });
 
 
@@ -102,8 +108,6 @@ app.post("/login", async (req, res) => {
         res.redirect("/login");
     }
 });
-
-
 
 
 
