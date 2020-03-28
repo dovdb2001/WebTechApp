@@ -1,11 +1,13 @@
 /* eslint-env node, es6 */
 const express = require("express");
 const path = require("path");
-const app = express();
 const bcrypt = require("bcryptjs");
 const session = require("express-session");
+const sqlite3 = require("sqlite3").verbose();
+const fs = require("fs");
 
-var server = app.listen (3000);
+const app = express();
+const server = app.listen (3000);
 
 var users = [{id: '1585404001350', name: 'Michael', email: 'michael@gmail.com', password: '$2a$10$Dib4CtBAA6VN/ROBY4hK7er/Gkv6uPgyCQeRfPTur2A3jZ85KKfXe'}]; //password = 'pwd'
 
@@ -16,6 +18,10 @@ app.use(session({
     saveUninitialized: false
 }));
 
+var dbfile = path.join(__dirname, "/main.db");
+//var db = new sqlite3.Database(dbfile);
+//db.close();
+
 
 app.get("/main.css", (req, res) => {
     res.sendFile(path.join(__dirname, "/main.css"));
@@ -24,6 +30,16 @@ app.get("/main.css", (req, res) => {
 
 app.get("/", (req, res) => {
     console.log(req.session.user);
+
+    var db = new sqlite3.Database(dbfile);
+    db.each("", (err, row) => {
+        console.log(row);
+    });
+    db.close();
+
+
+
+
     res.sendFile(path.join(__dirname, "/views/index.html"));
 });
 

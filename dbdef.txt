@@ -1,0 +1,19 @@
+CREATE TABLE student
+(
+
+);
+
+CREATE TABLE course
+(
+
+);
+
+CREATE TABLE enrolled
+(
+
+);
+
+CREATE TABLE image
+(
+
+);
