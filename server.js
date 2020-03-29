@@ -31,27 +31,13 @@ app.get("/app.js", (req, res) => {
     res.sendFile(path.join(__dirname, "/javascript/app.js"));
 });
 
+app.get("/course-details.js", (req, res) => {
+    res.sendFile(path.join(__dirname, "/javascript/course-details.js"));
+});
+
 
 app.get("/", (req, res) => {
     console.log("session user: " + req.session.user);
-
-    /*
-    var db = new sqlite3.Database(dbfile);
-    var exists;
-    db.serialize(() => {
-        db.all("SELECT * FROM student WHERE student_number = " + 6812172, (err, rows) => {
-            if (rows.length > 0) {
-                console.log(true);
-            } else {
-                console.log(false);
-            }
-        });
-
-    });
-    db.close();*/
-
-    console.log("f my life");
-
     res.sendFile(path.join(__dirname, "/views/index.html"));
 });
 
@@ -95,6 +81,10 @@ app.get("/courses", (req, res) => {
         res.send(rows);
     });
     db.close();
+});
+
+app.get("/details/:code", (req, res) => {
+    res.sendFile(path.join(__dirname, "/views/course-details.html"), {data: "hello"});
 });
 
 app.post("/register", async (req, res) => {
