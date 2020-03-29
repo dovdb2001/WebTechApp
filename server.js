@@ -89,7 +89,7 @@ app.get("/courses/:chuck", (req, res) => {
     db.close();
 });
 
-app.get("/courses/all", (req, res) => {
+app.get("/courses", (req, res) => {
     const db = new sqlite3.Database(dbfile);
     db.all("SELECT * FROM course", (err, rows) => {
         res.send(rows);
