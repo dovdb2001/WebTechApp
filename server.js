@@ -8,7 +8,8 @@ const sqlite3 = require("sqlite3").verbose();
 const app = express();
 const server = app.listen (3000);
 
-var users = [{id: '1585404001350', name: 'Michael', email: 'michael@gmail.com', password: '$2a$10$Dib4CtBAA6VN/ROBY4hK7er/Gkv6uPgyCQeRfPTur2A3jZ85KKfXe'}]; //password = 'pwd'
+var users = [{id: '1585404001350', name: 'Michael', email: 'michael@gmail.com', password: '$2a$10$Dib4CtBAA6VN/ROBY4hK7er/Gkv6uPgyCQeRfPTur2A3jZ85KKfXe'}];
+//password = 'pwd'
 
 app.use(express.urlencoded({extended: false}));
 app.use(session({
@@ -26,10 +27,15 @@ app.get("/main.css", (req, res) => {
     res.sendFile(path.join(__dirname, "/main.css"));
 });
 
+app.get("/app.js", (req, res) => {
+    res.sendFile(path.join(__dirname, "/javascript/app.js"));
+});
+
 
 app.get("/", (req, res) => {
     console.log("session user: " + req.session.user);
 
+    /*
     var db = new sqlite3.Database(dbfile);
     var exists;
     db.serialize(() => {
@@ -42,7 +48,7 @@ app.get("/", (req, res) => {
         });
 
     });
-    db.close();
+    db.close();*/
 
     console.log("f my life");
 
@@ -71,6 +77,24 @@ app.get("/browse", (req, res) => {
 app.get("/logout", (req, res) => {
     req.session.user = undefined;
     res.redirect("/")
+});
+
+app.get("/courses/:chuck", (req, res) => {
+    const db = new sqlite3.Database(dbfile);
+    db.all("SELECT * FROM course", (err, rows) => {
+        const start = req.params.chuck * 10;
+        var subset = rows.slice(start, start + 10);
+        res.send(subset);
+    });
+    db.close();
+});
+
+app.get("/courses/all", (req, res) => {
+    const db = new sqlite3.Database(dbfile);
+    db.all("SELECT * FROM course", (err, rows) => {
+        res.send(rows);
+    });
+    db.close();
 });
 
 app.post("/register", async (req, res) => {
