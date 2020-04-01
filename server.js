@@ -79,6 +79,13 @@ app.get("/browse", (req, res) => {
     }
 });
 
+app.get("/auth", (req, res) => {
+   if (req.session.user) {
+       res.send(true);
+   } else {
+       res.send(false);
+   }
+});
 
 // --- // login, logout & registering
 
