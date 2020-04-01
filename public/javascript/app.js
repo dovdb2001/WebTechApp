@@ -1,32 +1,49 @@
-
-let title = document.createElement("h2");
-title.textContent = "The Courses";
-document.getElementById("courses").append(title);
-
-(document.getElementById("btn")).addEventListener("click", pressed);
+(document.getElementById("btn")).addEventListener("click", loadMoreCourses);
+(document.getElementById("search_btn")).addEventListener("click", loadNewCourses);
 var chuck = 0;
 
 getCourses();
 
-function pressed() {
+function loadNewCourses() {
+    chuck = 0;
+    document.getElementById("courses").innerHTML = "";
+    (document.getElementById("btn")).disabled = false;
     getCourses();
+}
+
+function loadMoreCourses() {
+    getCourses();
+}
+
+function getURL() {
+    var url = "/courses/";
+    if ((document.getElementById("course_name")).value != "") {
+        url += (document.getElementById("course_name")).value + "/";
+    } else {
+        url += "*/"
+    }
+    url += (document.getElementById("programme")).value + "/";
+    url += (document.getElementById("level")).value + "/";
+    url += (document.getElementById("semester")).value + "/";
+    url += chuck
+    return url;
 }
 
 function getCourses() {
     var req = new XMLHttpRequest()
-    req.open("GET", "/courses/" + chuck, true);
+    var url = "/courses/*/*/*/*/" + chuck;
+    req.open("GET", getURL(), true);
     req.onreadystatechange = function () {
         if (req.readyState == 4 && req.status == 200) {
-            addCourses(JSON.parse(req.responseText));
+            var data = JSON.parse(req.responseText);
+            if (data.length < 10) {
+                (document.getElementById("btn")).disabled = true;
+            }
+            addCourses(data);
         }
     }
     req.send();
-
-    if (chuck < 4) {
-        chuck++;
-    } else {
-        (document.getElementById("btn")).disabled = true;
-    }
+    chuck++;
 }
 
 function addCourses(courses) {

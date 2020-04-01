@@ -19,9 +19,57 @@ app.use(session({
     saveUninitialized: false
 }));
 
+// --- // public (AU) pages
+
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "/views/index.html"));
 });
+
+app.get("/courses/:code", (req, res) => {
+    res.sendFile(path.join(__dirname, "/views/course-details.html"));
+});
+
+
+// --- // getting specific courses
+
+app.get("/course-info/:code", (req, res) => {
+    const db = new sqlite3.Database(dbfile);
+    db.all("SELECT * FROM course WHERE code = '" + req.params.code + "'", (err, rows) => {
+        res.send(rows);
+        console.log(rows);
+    });
+    db.close();
+});
+
+app.get("/courses/:title/:programme/:level/:semester/:block", (req, res) => {
+    var stmt = "SELECT * FROM course ";
+    if (req.params.title && req.params.title != "*") {
+        stmt += "WHERE title LIKE '%" + req.params.title + "%'";
+    }
+    if (req.params.programme != "*") {
+        stmt += "WHERE programme = '" + req.params.programme + "'";
+    }
+    if (req.params.level != "*") {
+        stmt += "WHERE level = '" + req.params.level + "'";
+    }
+    if (req.params.semester != "*") {
+        stmt += "WHERE semester = " + req.params.semester ;
+    }
+
+    stmt += " ORDER BY programme, level, semester, title";
+
+    const db = new sqlite3.Database(dbfile);
+    db.all(stmt, (err, rows) => {
+        const start = req.params.block * 10;
+        var subset = rows.slice(start, start + 10);
+        res.send(subset);
+    });
+    db.close();
+
+});
+
+
+// --- // protected pages
 
 app.get("/browse", (req, res) => {
     if (req.session.user) {
@@ -31,36 +79,8 @@ app.get("/browse", (req, res) => {
     }
 });
 
-app.get("/logout", (req, res) => {
-    req.session.user = undefined;
-    res.redirect("/")
-});
 
-app.get("/courses/:chuck", (req, res) => {
-    const db = new sqlite3.Database(dbfile);
-    db.all("SELECT * FROM course", (err, rows) => {
-        const start = req.params.chuck * 10;
-        var subset = rows.slice(start, start + 10);
-        res.send(subset);
-    });
-    db.close();
-});
-
-app.get("/courses", (req, res) => {
-    const db = new sqlite3.Database(dbfile);
-    db.all("SELECT * FROM course", (err, rows) => {
-        res.send(rows);
-    });
-    db.close();
-});
-
-app.get("/details/:code", (req, res) => {
-    res.sendFile(path.join(__dirname, "/views/course-details.html"), {data: "hello"});
-});
-
-
-
-// --- // login & registering
+// --- // login, logout & registering
 
 app.get("/login", (req, res) => {
     res.sendFile(path.join(__dirname, "/views/login.html"));
@@ -68,6 +88,11 @@ app.get("/login", (req, res) => {
 
 app.get("/register", (req, res) => {
     res.sendFile(path.join(__dirname, "/views/register.html"));
+});
+
+app.get("/logout", (req, res) => {
+    req.session.user = undefined;
+    res.redirect("/")
 });
 
 app.post("/register", (req, res) => {
