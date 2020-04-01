@@ -3,13 +3,12 @@ let title = document.createElement("h2");
 title.textContent = "The Courses";
 document.getElementById("courses").append(title);
 
-//(document.getElementById("btn")).addEventListener("click", buttonPressed);
-(document.getElementById("btn")).onclick = () => {pressed();}
+(document.getElementById("btn")).addEventListener("click", pressed);
 var chuck = 0;
 
+getCourses();
 
 function pressed() {
-    console.log("did press" + chuck);
     getCourses();
 }
 
@@ -25,17 +24,47 @@ function getCourses() {
 
     if (chuck < 4) {
         chuck++;
+    } else {
+        (document.getElementById("btn")).disabled = true;
     }
 }
 
 function addCourses(courses) {
     for (let i = 0; i < courses.length; i++) {
-        addTextNode(courses[i].code, document.getElementById("courses"));
+        addCourse(courses[i], document.getElementById("courses"));
     }
 }
 
 function addTextNode(text, body) {
     body.append(document.createTextNode(text));
     body.append(document.createElement("br"));
-    console.log("finisched");
 }
+
+function addCourse(course, body) {
+    var div = document.createElement("div");
+    div.addEventListener("click", didSelectCourse);
+    div.id = course.code;
+
+    addTextNode(course.title, div);
+    addTextNode(course.code, div);
+    addTextNode(course.programme, div);
+    addTextNode(course.level, div);
+    addTextNode("semester: " + course.semester, div);
+
+    body.append(div);
+}
+
+function didSelectCourse(event) {
+    window.location.replace("/details/" + event.target.id);
+}
+
+
+
+
+
+
+
+
+
+
+

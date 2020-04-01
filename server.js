@@ -7,53 +7,24 @@ const sqlite3 = require("sqlite3").verbose();
 
 const app = express();
 const server = app.listen (3000);
+const dbfile = path.join(__dirname, "/database/main.db");
 
-var users = [{id: '1585404001350', name: 'Michael', email: 'michael@gmail.com', password: '$2a$10$Dib4CtBAA6VN/ROBY4hK7er/Gkv6uPgyCQeRfPTur2A3jZ85KKfXe'}];
 //password = 'pwd'
 
 app.use(express.urlencoded({extended: false}));
+app.use(express.static("public"));
 app.use(session({
     secret: "secret",
     resave: false,
     saveUninitialized: false
 }));
 
-var dbfile = path.join(__dirname, "/database/main.db");
-//var db = new sqlite3.Database(dbfile);
-//db.close();
-
-
-app.get("/main.css", (req, res) => {
-    res.sendFile(path.join(__dirname, "/main.css"));
-});
-
-app.get("/app.js", (req, res) => {
-    res.sendFile(path.join(__dirname, "/javascript/app.js"));
-});
-
-app.get("/course-details.js", (req, res) => {
-    res.sendFile(path.join(__dirname, "/javascript/course-details.js"));
-});
-
-
 app.get("/", (req, res) => {
-    console.log("session user: " + req.session.user);
     res.sendFile(path.join(__dirname, "/views/index.html"));
 });
 
-app.get("/login", (req, res) => {
-    console.log(req.session.user);
-    res.sendFile(path.join(__dirname, "/views/login.html"));
-});
-
-app.get("/register", (req, res) => {
-    console.log(req.session.user);
-    res.sendFile(path.join(__dirname, "/views/register.html"));
-});
-
 app.get("/browse", (req, res) => {
-    console.log(req.session.user);
-    if (req.session.user === 2020) {
+    if (req.session.user) {
         res.sendFile(path.join(__dirname, "/views/browse.html"));
     } else {
         res.redirect("/");
@@ -87,41 +58,94 @@ app.get("/details/:code", (req, res) => {
     res.sendFile(path.join(__dirname, "/views/course-details.html"), {data: "hello"});
 });
 
-app.post("/register", async (req, res) => {
-    console.log(req.body.level);
-    try {
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
-        users.push({
-            id: Date.now().toString(),
-            name: req.body.name,
-            email: req.body.email,
-            password: hashedPassword
+
+
+// --- // login & registering
+
+app.get("/login", (req, res) => {
+    res.sendFile(path.join(__dirname, "/views/login.html"));
+});
+
+app.get("/register", (req, res) => {
+    res.sendFile(path.join(__dirname, "/views/register.html"));
+});
+
+app.post("/register", (req, res) => {
+    if (req.body.password == req.body.confirm_password) {
+        const db = new sqlite3.Database(dbfile);
+        db.all("SELECT * FROM student WHERE student_number = " + req.body.student_number, (err, rows) => {
+            if (rows.length == 0) {
+                createUser(req);
+                res.redirect("/login");
+            } else {
+                // student number already exists
+                console.log("student number already exists");
+                res.redirect("/register");
+            }
         });
-        res.redirect("/login");
-    } catch {
+        db.close();
+    } else {
+        // passwords do not match
+        console.log("passwords do not match");
         res.redirect("/register");
     }
 });
 
+async function createUser (req) {
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const user = [req.body.student_number, hashedPassword, req.body.first_name, req.body.last_name, req.body.programme, req.body.level];
+
+    const db = new sqlite3.Database(dbfile);
+    db.run("INSERT INTO student VALUES (?, ?, ?, ?, ?, ?)", user);
+    db.close();
+}
 
 app.post("/login", async (req, res) => {
-    console.log(req.body.email);
-    console.log(req.body.password);
+    const db = new sqlite3.Database(dbfile);
+    db.all("SELECT * FROM student WHERE student_number = " + req.body.student_number, async (err, rows) => {
+        if (rows.count == 0) {
+            // student number not found
+            req.session.user = undefined;
+            res.redirect("/login");
+        } else {
 
-    const stored_pwd = (users.find(x => x.email === req.body.email)).password;
-    //const given_pwd = await bcrypt.hash(req.body.password, 10);
+            if (await bcrypt.compare(req.body.password, rows[0].password)) {
+                req.session.user = req.body.student_number;
+                res.redirect("/browse");
+            } else {
+                req.session.user = undefined;
+                res.redirect("/login");
+            }
 
-    console.log(stored_pwd);
-    //console.log(given_pwd);
-
-    if (await bcrypt.compare(req.body.password, stored_pwd)) {
-        req.session.user = 2020;
-        res.redirect("/browse");
-    } else {
-        req.session.user = undefined;
-        res.redirect("/login");
-    }
+        }
+    });
+    db.close();
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
