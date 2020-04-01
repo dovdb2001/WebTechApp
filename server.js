@@ -19,7 +19,7 @@ app.use(session({
     saveUninitialized: false
 }));
 
-// --- // public (AU) pages
+// --- // public pages
 
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "/views/index.html"));
@@ -30,7 +30,7 @@ app.get("/courses/:code", (req, res) => {
 });
 
 
-// --- // getting specific courses
+// --- // getting specific information
 
 app.get("/course-info/:code", (req, res) => {
     const db = new sqlite3.Database(dbfile);
@@ -66,6 +66,38 @@ app.get("/courses/:title/:programme/:level/:semester/:block", (req, res) => {
     });
     db.close();
 
+});
+
+app.get("/account/info", (req, res) => {
+    if (req.session.user) {
+
+    } else {
+        res.send("You must be logged in to access account information");
+    }
+});
+
+app.get("/account/courses", (req, res) => {
+    if (req.session.user) {
+
+    } else {
+        res.send("You must be logged in to access account information");
+    }
+});
+
+app.post("/enroll/:code", (req, res) => {
+    if (req.session.user) {
+
+    } else {
+        res.send("You must be logged in to access account information");
+    }
+});
+
+app.post("/leave/:code", (req, res) => {
+    if (req.session.user) {
+
+    } else {
+        res.send("You must be logged in to access account information");
+    }
 });
 
 
