@@ -1,19 +1,3 @@
-setup();
-function setup() {
-    var req = new XMLHttpRequest()
-    req.open("GET", "/auth", true);
-    req.onreadystatechange = function () {
-        if (req.readyState == 4 && req.status == 200) {
-            if (req.responseText == "true") {
-                (document.getElementById("default")).innerHTML = "";
-            } else {
-                (document.getElementById("auth")).innerHTML = "";
-            }
-        }
-    }
-    req.send();
-}
-
 (document.getElementById("btn")).addEventListener("click", loadMoreCourses);
 (document.getElementById("search_btn")).addEventListener("click", loadNewCourses);
 var chuck = 0;

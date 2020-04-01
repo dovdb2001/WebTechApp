@@ -36,7 +36,6 @@ app.get("/course-info/:code", (req, res) => {
     const db = new sqlite3.Database(dbfile);
     db.all("SELECT * FROM course WHERE code = '" + req.params.code + "'", (err, rows) => {
         res.send(rows);
-        console.log(rows);
     });
     db.close();
 });
@@ -70,7 +69,11 @@ app.get("/courses/:title/:programme/:level/:semester/:block", (req, res) => {
 
 app.get("/account/info", (req, res) => {
     if (req.session.user) {
-
+        const db = new sqlite3.Database(dbfile);
+        db.all("SELECT * FROM student WHERE student_number = " + req.session.user, (err, rows) => {
+            res.send(rows);
+        });
+        db.close();
     } else {
         res.send("You must be logged in to access account information");
     }
@@ -116,6 +119,22 @@ app.get("/enrolled-courses", (req, res) => {
         res.sendFile(path.join(__dirname, "/views/enrolled-courses.html"));
     } else {
         res.redirect("/");
+    }
+});
+
+app.get("/browse", (req, res) => {
+    if (req.session.user) {
+        res.sendFile(path.join(__dirname, "/views/browse.html"));
+    } else {
+        res.redirect("/");
+    }
+});
+
+app.get("/browse/courses/:code", (req, res) => {
+    if (req.session.user) {
+        res.sendFile(path.join(__dirname, "/views/course-information.html"));
+    } else {
+        res.redirect("/course/" + req.params.code);
     }
 });
 
@@ -191,7 +210,7 @@ app.post("/login", async (req, res) => {
 
             if (await bcrypt.compare(req.body.password, rows[0].password)) {
                 req.session.user = req.body.student_number;
-                res.redirect("/");
+                res.redirect("/browse");
             } else {
                 req.session.user = undefined;
                 res.redirect("/login");
