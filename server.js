@@ -71,9 +71,17 @@ app.get("/courses/:title/:programme/:level/:semester/:block", (req, res) => {
 
 // --- // protected pages
 
-app.get("/browse", (req, res) => {
+app.get("/account", (req, res) => {
     if (req.session.user) {
-        res.sendFile(path.join(__dirname, "/views/browse.html"));
+        res.sendFile(path.join(__dirname, "/views/account.html"));
+    } else {
+        res.redirect("/");
+    }
+});
+
+app.get("/enrolled-courses", (req, res) => {
+    if (req.session.user) {
+        res.sendFile(path.join(__dirname, "/views/enrolled-courses.html"));
     } else {
         res.redirect("/");
     }
@@ -81,20 +89,28 @@ app.get("/browse", (req, res) => {
 
 app.get("/auth", (req, res) => {
    if (req.session.user) {
-       res.send(true);
+       res.send("true");
    } else {
-       res.send(false);
+       res.send("false");
    }
 });
 
 // --- // login, logout & registering
 
 app.get("/login", (req, res) => {
-    res.sendFile(path.join(__dirname, "/views/login.html"));
+    if (req.session.user) {
+       res.redirect("/");
+    } else {
+       res.sendFile(path.join(__dirname, "/views/login.html"));
+    }
 });
 
 app.get("/register", (req, res) => {
-    res.sendFile(path.join(__dirname, "/views/register.html"));
+    if (req.session.user) {
+       res.redirect("/");
+    } else {
+       res.sendFile(path.join(__dirname, "/views/register.html"));
+    }
 });
 
 app.get("/logout", (req, res) => {
@@ -143,7 +159,7 @@ app.post("/login", async (req, res) => {
 
             if (await bcrypt.compare(req.body.password, rows[0].password)) {
                 req.session.user = req.body.student_number;
-                res.redirect("/browse");
+                res.redirect("/");
             } else {
                 req.session.user = undefined;
                 res.redirect("/login");
