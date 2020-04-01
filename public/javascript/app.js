@@ -72,7 +72,11 @@ function addCourse(course, body) {
 }
 
 function didSelectCourse(event) {
-    window.location.replace("/courses/" + event.target.id);
+    if (window.location.href.charAt(window.location.href.length - 1) != "/") {
+        window.location.href += "/courses/" + event.target.id;
+    } else {
+        window.location.href += "courses/" + event.target.id;
+    }
 }
 
 

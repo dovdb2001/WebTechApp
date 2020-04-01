@@ -1,17 +1,57 @@
 const courseCode = window.location.href.substring(window.location.href.lastIndexOf("/") + 1);
 var course;
 
-var req = new XMLHttpRequest()
-req.open("GET", "/course-info/" + courseCode, true);
-req.onreadystatechange = function () {
-    if (req.readyState == 4 && req.status == 200) {
-        course = JSON.parse(req.responseText);
-        drawCourse();
-        console.log(course);
+getCourse();
+enrollment();
+
+function getCourse() {
+    var req = new XMLHttpRequest()
+    req.open("GET", "/course-info/" + courseCode, true);
+    req.onreadystatechange = function () {
+        if (req.readyState == 4 && req.status == 200) {
+            course = JSON.parse(req.responseText);
+            drawCourse();
+            console.log(course);
+        }
     }
+    req.send();
 }
-req.send();
 
 function drawCourse() {
 
 }
+
+function enrollment() {
+    var req = new XMLHttpRequest()
+    req.open("GET", "/enrolled/" + courseCode, true);
+    req.onreadystatechange = function () {
+        if (req.readyState == 4 && req.status == 200) {
+            if (req.responseText == "true") {
+                console.log("recieved true")
+                drawEnrollment("leave");
+            } else if (req.responseText == "false") {
+                drawEnrollment("enroll");
+            }
+        }
+    }
+    req.send();
+}
+
+
+function drawEnrollment(mode) {
+    var form = document.createElement("form");
+    form.method = "POST";
+    var btn = document.createElement("button");
+    btn.type = "submit";
+    form.append(btn);
+
+    if (mode == "enroll") {
+        form.action = "/enroll/" + courseCode;
+        btn.textContent = "enroll";
+    } else {
+        form.action = "/leave/" + courseCode;
+        btn.textContent = "leave";
+    }
+    document.body.append(form);
+}
+

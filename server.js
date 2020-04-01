@@ -91,6 +91,24 @@ app.get("/account/courses", (req, res) => {
     }
 });
 
+app.get("/enrolled/:code", (req, res) => {
+    if (req.session.user) {
+        const db = new sqlite3.Database(dbfile);
+        db.all("SELECT * FROM enrolled WHERE course_code = '" + req.params.code + "' AND student_number = " + req.session.user, (err, rows) => {
+            console.log(rows);
+            if (rows.length > 0) {
+                console.log("is sending true")
+                res.send("true");
+            } else {
+                res.send("false");
+            }
+        });
+        db.close();
+    } else {
+        res.send("You must be logged in to access account information");
+    }
+});
+
 
 // -- // enrolling and leaving courses
 
@@ -102,10 +120,10 @@ app.post("/enroll/:code", (req, res) => {
 
         db.all(c, (err, rows1) => {
             db.all(u, (err, rows2) => {
-                console.log(rows2, rows1);
-                if (rows1.programme == rows2.programme) {
+                console.log(rows2[0], rows1[0]);
+                if (rows1[0].programme == rows2[0].programme) {
                     enroll(req.session.user, req.params.code);
-                    res.send("enrolled!");
+                    res.redirect("/browse");
                 } else {
                     res.send("an error occured");
                 }
@@ -128,7 +146,7 @@ app.post("/leave/:code", (req, res) => {
         const db = new sqlite3.Database(dbfile);
         db.run("DELETE FROM enrolled WHERE course_code = '" + req.params.code + "' AND student_number = " + req.session.user);
         db.close();
-        res.send("left!");
+        res.redirect("/browse");
     } else {
         res.send("You must be logged in to access account information");
     }
@@ -169,13 +187,6 @@ app.get("/browse/courses/:code", (req, res) => {
     }
 });
 
-app.get("/auth", (req, res) => {
-   if (req.session.user) {
-       res.send("true");
-   } else {
-       res.send("false");
-   }
-});
 
 // --- // login, logout & registering
 
