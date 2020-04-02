@@ -61,12 +61,11 @@ function addCourse(course, body) {
     var div = document.createElement("div");
     div.addEventListener("click", didSelectCourse);
     div.id = course.code;
+    div.setAttribute("class", "container");
 
-    addTextNode(course.title, div);
-    addTextNode(course.code, div);
+    addTextNode(course.title + ", " + course.code, div);
     addTextNode(course.programme, div);
-    addTextNode(course.level, div);
-    addTextNode("semester: " + course.semester, div);
+    addTextNode(course.level + ". Semester: " + course.semester, div);
 
     body.append(div);
 }
