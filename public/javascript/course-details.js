@@ -2,6 +2,10 @@ const courseCode = window.location.href.substring(window.location.href.lastIndex
 var course;
 var enrollmentMode = "NA";
 
+var btn = document.createElement("button");
+btn.addEventListener("click", btnPressed);
+document.body.append(btn);
+
 getCourse();
 enrollment();
 
@@ -37,10 +41,7 @@ function enrollment() {
 
 function addEnrollment() {
     if (enrollmentMode == "enroll" || enrollmentMode == "leave") {
-        var btn = document.createElement("button");
-        btn.addEventListener("click", btnPressed);
         btn.textContent = enrollmentMode;
-        document.body.append(btn);
     }
 }
 
@@ -50,26 +51,10 @@ function btnPressed(event) {
     req.onreadystatechange = function () {
         if (req.readyState == 4 && req.status == 200) {
             alert(req.responseText);
+            enrollment();
         }
     }
     req.send();
 }
 
-/*
-function drawEnrollment(mode) {
-    var form = document.createElement("form");
-    form.method = "POST";
-    var btn = document.createElement("button");
-    btn.type = "submit";
-    form.append(btn);
-
-    if (mode == "enroll") {
-        form.action = "/enroll/" + courseCode;
-        btn.textContent = "enroll";
-    } else {
-        form.action = "/leave/" + courseCode;
-        btn.textContent = "leave";
-    }
-    document.body.append(form);
-}*/
 
