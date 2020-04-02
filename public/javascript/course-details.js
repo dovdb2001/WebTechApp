@@ -23,21 +23,16 @@ function drawCourse() {
 
 function enrollment() {
     var req = new XMLHttpRequest()
-    req.open("GET", "/enrolled/" + courseCode, true);
+    req.open("GET", "/enrollable/" + courseCode, true);
     req.onreadystatechange = function () {
         if (req.readyState == 4 && req.status == 200) {
-            if (req.responseText == "true") {
-                console.log("recieved true")
-                drawEnrollment("leave");
-            } else if (req.responseText == "false") {
-                drawEnrollment("enroll");
-            }
+            console.log(req.responseText);
         }
     }
     req.send();
 }
 
-
+/*
 function drawEnrollment(mode) {
     var form = document.createElement("form");
     form.method = "POST";
@@ -53,5 +48,5 @@ function drawEnrollment(mode) {
         btn.textContent = "leave";
     }
     document.body.append(form);
-}
+}*/
 
