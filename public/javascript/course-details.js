@@ -1,5 +1,6 @@
 const courseCode = window.location.href.substring(window.location.href.lastIndexOf("/") + 1);
 var course;
+var enrollmentMode = "NA";
 
 getCourse();
 enrollment();
@@ -26,7 +27,29 @@ function enrollment() {
     req.open("GET", "/enrollable/" + courseCode, true);
     req.onreadystatechange = function () {
         if (req.readyState == 4 && req.status == 200) {
-            console.log(req.responseText);
+            enrollmentMode = req.responseText;
+            addEnrollment();
+        }
+    }
+    req.send();
+}
+
+
+function addEnrollment() {
+    if (enrollmentMode == "enroll" || enrollmentMode == "leave") {
+        var btn = document.createElement("button");
+        btn.addEventListener("click", btnPressed);
+        btn.textContent = enrollmentMode;
+        document.body.append(btn);
+    }
+}
+
+function btnPressed(event) {
+    var req = new XMLHttpRequest()
+    req.open("POST", "/" + enrollmentMode + "/" + courseCode, true);
+    req.onreadystatechange = function () {
+        if (req.readyState == 4 && req.status == 200) {
+            alert(req.responseText);
         }
     }
     req.send();

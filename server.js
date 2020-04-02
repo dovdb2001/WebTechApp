@@ -95,15 +95,16 @@ app.get("/enrollable/:code", (req, res) => {
     if (req.session.user) {
         const db = new sqlite3.Database(dbfile);
         db.get("SELECT * FROM course WHERE code = '" + req.params.code + "'", (err, course) => {
-            db.get("SELECT * FROM student WHERE student_number = " + req.session.user,(err, student) => {
-                console.log(course, student, req.session.user);
-                if (course.programme == student.programme && course.level == student.academic_level && !isEnrolled(req.session.user, req.params.code)) {
-                    res.send("enroll");
-                } else if (course.programme == student.programme && course.level == student.academic_level && isEnrolled(req.session.user, req.params.code)) {
-                    res.send("leave");
-                } else {
-                    res.send("NA");
-                }
+            db.get("SELECT * FROM student WHERE student_number = " + req.session.user, (err, student) => {
+                db.get("SELECT * FROM enrolled WHERE course_code = '" + req.params.code + "' AND student_number = " + req.session.user, (err, row) => {
+                    if (course.programme == student.programme && course.level == student.academic_level && row == undefined) {
+                        res.send("enroll");
+                    } else if (course.programme == student.programme && course.level == student.academic_level && row != undefined) {
+                        res.send("leave");
+                    } else {
+                        res.send("NA");
+                    }
+                });
             });
         });
         db.close();
@@ -112,25 +113,14 @@ app.get("/enrollable/:code", (req, res) => {
     }
 });
 
-function isEnrolled (student_number, course_code) {
-    const db = new sqlite3.Database(dbfile);
-    db.get("SELECT * FROM enrolled WHERE course_code = '" + course_code + "' AND student_number = " + student_number, (err, row) => {
-        if (row != {}) {
-            return true;
-        } else {
-            return false;
-        }
-    });
-    db.close();
-}
-
 // -- // enrolling and leaving courses
 
 app.post("/enroll/:code", (req, res) => {
     if (req.session.user) {
         const db = new sqlite3.Database(dbfile);
-        db.run("INSERT INTO enrolled VALUES (?, ?)", [student_number, course_code]);
+        db.run("INSERT INTO enrolled VALUES (?, ?)", [req.session.user, req.params.code]);
         db.close();
+        res.send("succes!");
     } else {
         res.send("You must be logged in to access account information");
     }
@@ -141,6 +131,7 @@ app.post("/leave/:code", (req, res) => {
         const db = new sqlite3.Database(dbfile);
         db.run("DELETE FROM enrolled WHERE course_code = '" + req.params.code + "' AND student_number = " + req.session.user);
         db.close();
+        res.send("succes!");
     } else {
         res.send("You must be logged in to access account information");
     }
@@ -177,7 +168,7 @@ app.get("/browse/courses/:code", (req, res) => {
     if (req.session.user) {
         res.sendFile(path.join(__dirname, "/views/course-information.html"));
     } else {
-        res.redirect("/course/" + req.params.code);
+        res.redirect("/courses/" + req.params.code);
     }
 });
 
