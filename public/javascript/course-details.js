@@ -15,7 +15,6 @@ function getCourse() {
         if (req.readyState == 4 && req.status == 200) {
             course = JSON.parse(req.responseText);
             drawCourse();
-            console.log(course);
         }
     }
     req.send();

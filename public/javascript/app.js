@@ -55,7 +55,7 @@ function getCourses() {
 }
 
 function addCourses(courses) {
-    for (let i = 0; i < courses.length; i++) {
+    for (var i = 0; i < courses.length; i++) {
         addCourse(courses[i], document.getElementById("courses"));
     }
 }
