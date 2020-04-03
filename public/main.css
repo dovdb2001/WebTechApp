@@ -4,7 +4,7 @@ body {
     color: white;
     font-variant: small-caps;
     font-family: "Helvetica";
-    text-align: center;
+
 }
 
 #wrapper {
@@ -109,7 +109,10 @@ input {
     height: auto;
     width: 275px;
     display: inline-block;
-    top: 150px;
+    top: 20%;
+    left: 44%;
+    position: absolute;
+
 }
 
 @media only screen and (max-width: 675px) {
