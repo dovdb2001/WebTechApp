@@ -45,7 +45,7 @@ function addEnrollment() {
 }
 
 function btnPressed(event) {
-    var req = new XMLHttpRequest()
+    var req = new XMLHttpRequest();
     req.open("POST", "/" + enrollmentMode + "/" + courseCode, true);
     req.onreadystatechange = function () {
         if (req.readyState == 4 && req.status == 200) {

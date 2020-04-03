@@ -80,7 +80,7 @@ app.get("/courses/:title/:programme/:level/:semester/:block", (req, res) => {
 app.get("/account/info", (req, res) => {
     if (req.session.user) {
         const db = new sqlite3.Database(dbfile);
-        db.all("SELECT * FROM student WHERE student_number = " + req.session.user, (err, rows) => {
+        db.all("SELECT student_number, first_name, last_name, programme, academic_level FROM student WHERE student_number = " + req.session.user, (err, rows) => {
             res.send(rows);
         });
         db.close();
@@ -122,6 +122,7 @@ app.get("/enrollable/:code", (req, res) => {
         res.send("You must be logged in to access account information");
     }
 });
+
 
 // -- // enrolling and leaving courses
 
