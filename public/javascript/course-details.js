@@ -4,7 +4,6 @@ var enrollmentMode = "NA";
 
 var btn = document.createElement("button");
 btn.addEventListener("click", btnPressed);
-document.body.append(btn);
 
 getCourse();
 enrollment();
@@ -42,6 +41,7 @@ function enrollment() {
 function addEnrollment() {
     if (enrollmentMode == "enroll" || enrollmentMode == "leave") {
         btn.textContent = enrollmentMode;
+        document.body.append(btn);
     }
 }
 

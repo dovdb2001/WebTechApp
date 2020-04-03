@@ -2,12 +2,20 @@
 (document.getElementById("search_btn")).addEventListener("click", loadNewCourses);
 var chuck = 0;
 
+addTitle();
 getCourses();
+
+function addTitle() {
+    var title = document.createElement("h2");
+    title.textContent = "All courses";
+    (document.getElementById("courses")).append(title);
+}
 
 function loadNewCourses() {
     chuck = 0;
     document.getElementById("courses").innerHTML = "";
     (document.getElementById("btn")).disabled = false;
+    addTitle();
     getCourses();
 }
 
@@ -64,8 +72,8 @@ function addCourse(course, body) {
     div.setAttribute("class", "container");
 
     addTextNode(course.title + ", " + course.code, div);
-    addTextNode(course.programme, div);
-    addTextNode(course.level + ". Semester: " + course.semester, div);
+    addTextNode(course.programme + ", " + course.level, div);
+    addTextNode("Semester: " + course.semester, div);
 
     body.append(div);
 }

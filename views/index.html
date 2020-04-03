@@ -5,65 +5,63 @@
     </head>
 
     <header>
-        <div class="content-wrapper">
-            <h1>WEBTECH ASSIGNMENT 3</h1>
-            <ul>
-                <li><a href="/">Courses</a></li>
-                <li><a href="/login">Login</a></li>
-                <li><a href="/register">Register</a></li>
-            </ul>
-        </div>
+        <h1>WEBTECH ASSIGNMENT 3</h1>
+        <ul>
+            <li><a href="/">Courses</a></li>
+            <li><a href="/login">Login</a></li>
+            <li><a href="/register">Register</a></li>
+        </ul>
     </header>
 
     <body>
-        <div id=search>
-            <h2>Search</h2>
+        <div class="wrapper">
+            <div id=search>
+                <h2>Search</h2>
 
-            <div>
-                <label for="course_name">Course</label>
-                <input type="text" name="course_name" id="course_name">
+                <div class="container">
+                    <div>
+                        <input type="text" name="course_name" id="course_name" placeholder="course name">
+                    </div>
+
+                    <div>
+                        <select name="programme" id="programme">
+                            <option value="*">All programmes</option>
+                            <option value="Computer Science">Computer Science</option>
+                            <option value="Physics and Astronomy">Physics and Astronomy</option>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Artificial Intelegance">Artificial Intelegance</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <select name="level" id="level">
+                            <option value="*">All academic levels</option>
+                            <option value="BSc">BSc</option>
+                            <option value="MSc">MSc</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <select name="semester" id="semester">
+                            <option value="*">All semesters</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+
+                    <hr>
+
+                    <button id="search_btn">Search</button>
+                </div>
             </div>
 
-            <div>
-                <label for="programme">Programme</label>
-                <select name="programme" id="programme">
-                    <option value="*">All</option>
-                    <option value="Computer Science">Computer Science</option>
-                    <option value="Physics and Astronomy">Physics and Astronomy</option>
-                    <option value="Mathematics">Mathematics</option>
-                    <option value="Artificial Intelegance">Artificial Intelegance</option>
-                </select>
+            <div id="courses">
             </div>
 
-            <div>
-                <label for="Academic level">Academic level</label>
-                <select name="level" id="level">
-                    <option value="*">All</option>
-                    <option value="BSc">BSc</option>
-                    <option value="MSc">MSc</option>
-                </select>
-            </div>
-
-            <div>
-                <label for="semester">Semester</label>
-                <select name="semester" id="semester">
-                    <option value="*">All</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                </select>
-            </div>
-
-            <button id="search_btn">Search</button>
+            <button id="btn">Get More Courses</button>
+            <script src="javascript/app.js"></script>
         </div>
-
-        <h2>The Courses</h2>
-
-        <div id="courses">
-        </div>
-
-        <button id="btn">Get More Courses</button>
-        <script src="javascript/app.js"></script>
     </body>
 </html>

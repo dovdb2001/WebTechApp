@@ -9,8 +9,6 @@ const app = express();
 const server = app.listen (3000);
 const dbfile = path.join(__dirname, "/database/main.db");
 
-//password = 'pwd'
-
 app.use(express.urlencoded({extended: false}));
 app.use(express.static("public"));
 app.use(session({
@@ -22,11 +20,19 @@ app.use(session({
 // --- // public pages
 
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "/views/index.html"));
+    if (req.session.user) {
+        res.redirect("/browse");
+    } else {
+        res.sendFile(path.join(__dirname, "/views/index.html"));
+    }
 });
 
 app.get("/courses/:code", (req, res) => {
-    res.sendFile(path.join(__dirname, "/views/course-details.html"));
+    if (req.session.user) {
+        res.redirect("/browse/courses/" + req.params.code);
+    } else {
+        res.sendFile(path.join(__dirname, "/views/course-details.html"));
+    }
 });
 
 
@@ -59,9 +65,13 @@ app.get("/courses/:title/:programme/:level/:semester/:block", (req, res) => {
 
     const db = new sqlite3.Database(dbfile);
     db.all(stmt, (err, rows) => {
-        const start = req.params.block * 10;
-        var subset = rows.slice(start, start + 10);
-        res.send(subset);
+        if (rows != undefined) {
+            const start = req.params.block * 10;
+            var subset = rows.slice(start, start + 10);
+            res.send(subset);
+        } else {
+            res.send([]);
+        }
     });
     db.close();
 
