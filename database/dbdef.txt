@@ -20,17 +20,9 @@ CREATE TABLE course
     semester INTERGER NOT NULL,
     teacher CHAR(255) NOT NULL,
     description CHAR(2000) NOT NULL,
+    image_id CHAR(45) NOT NULL,
     
     PRIMARY KEY (code)
-);
-
-CREATE TABLE image
-(
-    course_code CHAR(9) NOT NULL,
-    image BLOB NOT NULL,
-    
-    PRIMARY KEY (course_code),
-    FOREIGN KEY (course_code) REFERENCES course (course_code)
 );
 
 CREATE TABLE enrolled
@@ -42,3 +34,4 @@ CREATE TABLE enrolled
     FOREIGN KEY (student_number) REFERENCES student (student_number),
     FOREIGN KEY (course_code) REFERENCES course (code)
 );
+
