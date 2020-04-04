@@ -6,6 +6,7 @@ const session = require("express-session");
 const sqlite3 = require("sqlite3").verbose();
 const morgan = require('morgan');
 const fs = require("fs");
+const sanitizer = require("sanitizer");
 
 const app = express();
 const server = app.listen (3000);
@@ -22,7 +23,7 @@ app.use(session({
 }));
 
 
-// --- // public pages
+// --- // public pages // no database access
 
 app.get("/", (req, res) => {
     if (req.session.user) {
@@ -41,11 +42,11 @@ app.get("/courses/:code", (req, res) => {
 });
 
 
-// --- // getting specific information
+// --- // getting specific information // 5 methods sql protected
 
 app.get("/course-info/:code", (req, res) => {
     const db = new sqlite3.Database(dbfile);
-    db.all("SELECT * FROM course WHERE code = '" + req.params.code + "'", (err, rows) => {
+    db.all("SELECT * FROM course WHERE code = ?", req.params.code, (err, rows) => {
         res.send(rows);
     });
     db.close();
@@ -53,23 +54,44 @@ app.get("/course-info/:code", (req, res) => {
 
 app.get("/courses/:title/:programme/:level/:semester/:block", (req, res) => {
     var stmt = "SELECT * FROM course ";
+    var end = "";
+    var values = [];
+
     if (req.params.title && req.params.title != "*") {
-        stmt += "WHERE title LIKE '%" + req.params.title + "%'";
+        end += "title LIKE ? ";
+        values.push("%" + req.params.title + "%");
     }
     if (req.params.programme != "*") {
-        stmt += "WHERE programme = '" + req.params.programme + "'";
+        if (values.length > 0) {
+            end += "AND ";
+        }
+        end += "programme = ? ";
+        values.push(req.params.programme);
     }
     if (req.params.level != "*") {
-        stmt += "WHERE level = '" + req.params.level + "'";
+        if (values.length > 0) {
+            end += "AND ";
+        }
+        end += "level = ? ";
+        values.push(req.params.level);
     }
     if (req.params.semester != "*") {
-        stmt += "WHERE semester = " + req.params.semester ;
+        if (values.length > 0) {
+            end += "AND ";
+        }
+        end += "semester = ? ";
+        values.push(req.params.semester);
+    }
+
+    if (values.length > 0) {
+        stmt += "WHERE " + end;
     }
 
     stmt += " ORDER BY programme, level, semester, title";
 
+
     const db = new sqlite3.Database(dbfile);
-    db.all(stmt, (err, rows) => {
+    db.all(stmt, values, (err, rows) => {
         if (rows != undefined) {
             const start = req.params.block * 10;
             var subset = rows.slice(start, start + 10);
@@ -85,7 +107,7 @@ app.get("/courses/:title/:programme/:level/:semester/:block", (req, res) => {
 app.get("/account/info", (req, res) => {
     if (req.session.user) {
         const db = new sqlite3.Database(dbfile);
-        db.all("SELECT student_number, first_name, last_name, programme, academic_level FROM student WHERE student_number = " + req.session.user, (err, rows) => {
+        db.all("SELECT student_number, first_name, last_name, programme, academic_level FROM student WHERE student_number = ?", req.session.user, (err, rows) => {
             res.send(rows);
         });
         db.close();
@@ -97,7 +119,7 @@ app.get("/account/info", (req, res) => {
 app.get("/account/courses", (req, res) => {
     if (req.session.user) {
         const db = new sqlite3.Database(dbfile);
-        db.all("SELECT * FROM enrolled WHERE student_number = " + req.session.user, (err, rows) => {
+        db.all("SELECT * FROM enrolled WHERE student_number = ?", req.session.user, (err, rows) => {
             res.send(rows);
         });
         db.close();
@@ -109,9 +131,9 @@ app.get("/account/courses", (req, res) => {
 app.get("/enrollable/:code", (req, res) => {
     if (req.session.user) {
         const db = new sqlite3.Database(dbfile);
-        db.get("SELECT * FROM course WHERE code = '" + req.params.code + "'", (err, course) => {
-            db.get("SELECT * FROM student WHERE student_number = " + req.session.user, (err, student) => {
-                db.get("SELECT * FROM enrolled WHERE course_code = '" + req.params.code + "' AND student_number = " + req.session.user, (err, row) => {
+        db.get("SELECT * FROM course WHERE code = ?", req.params.code, (err, course) => {
+            db.get("SELECT * FROM student WHERE student_number = ?", req.session.user, (err, student) => {
+                db.get("SELECT * FROM enrolled WHERE course_code = ? AND student_number = ?", [req.params.code, req.session.user], (err, row) => {
                     if (course.programme == student.programme && course.level == student.academic_level && row == undefined) {
                         res.send("enroll");
                     } else if (course.programme == student.programme && course.level == student.academic_level && row != undefined) {
@@ -129,7 +151,7 @@ app.get("/enrollable/:code", (req, res) => {
 });
 
 
-// -- // updating account info
+// -- // updating account info // all 4 methods sql protected
 
 app.post("/account/update/info", (req, res) => {
     if (req.session.user) {
@@ -143,7 +165,7 @@ app.post("/account/update/info", (req, res) => {
 app.post("/account/update/pwd", (req, res) => {
     if (req.session.user) {
         const db = new sqlite3.Database(dbfile);
-        db.all("SELECT * FROM student WHERE student_number = " + req.session.user, async (err, rows) => {
+        db.all("SELECT * FROM student WHERE student_number = ?", req.session.user, async (err, rows) => {
             if (await bcrypt.compare(req.body.old_password, rows[0].password)) {
                 if (req.body.new_password == req.body.confirm_new_password) {
                     updatePassword(req.session.user, req.body.new_password);
@@ -161,25 +183,18 @@ app.post("/account/update/pwd", (req, res) => {
     } else {
         res.send("You must be logged in to access account information");
     }
-
-
-    // first check if old password is valid
-
-    // check if the two new passwords are equal
-
-    // update the password
 });
 
 async function updatePassword(student_number, new_password) {
     const hashedPassword = await bcrypt.hash(new_password, 10);
     const db = new sqlite3.Database(dbfile);
-    db.run("UPDATE student SET password = '" + hashedPassword + "' WHERE student_number = " + student_number);
+    db.run("UPDATE student SET password = ? WHERE student_number = ?", [hashedPassword, student_number]);
     db.close();
 }
 
 function updateInformation(req) {
     const db = new sqlite3.Database(dbfile);
-    db.run("UPDATE student SET first_name = '" + req.body.first_name + "', last_name = '" + req.body.last_name + "', programme = '" + req.body.programme + "', academic_level = '" + req.body.level + "' WHERE student_number = " + req.session.user);
+    db.run("UPDATE student SET first_name = ?, last_name = ?, programme = ?, academic_level = ? WHERE student_number = ?", [req.body.first_name, req.body.last_name, req.body.programme, req.body.level, req.session.user]);
     db.close();
 
     verifyEnrolledCourses(req.session.user, req.body.level, req.body.programme)
@@ -187,11 +202,12 @@ function updateInformation(req) {
 
 function verifyEnrolledCourses(student_number, level, programme) {  // new level and new programme
     const db = new sqlite3.Database(dbfile);
-    db.run("DELETE FROM enrolled WHERE course_code NOT IN (SELECT code FROM course WHERE programme = '" + programme + "' AND level = '" + level + "')");
+    db.run("DELETE FROM enrolled WHERE course_code NOT IN (SELECT code FROM course WHERE programme = ? AND level = ?)", [programme, level]);
     db.close();
 }
 
-// -- // enrolling and leaving courses
+
+// -- // enrolling and leaving courses // 2 methods sql protected
 
 app.post("/enroll/:code", (req, res) => {
     if (req.session.user) {
@@ -207,7 +223,7 @@ app.post("/enroll/:code", (req, res) => {
 app.post("/leave/:code", (req, res) => {
     if (req.session.user) {
         const db = new sqlite3.Database(dbfile);
-        db.run("DELETE FROM enrolled WHERE course_code = '" + req.params.code + "' AND student_number = " + req.session.user);
+        db.run("DELETE FROM enrolled WHERE course_code = ? AND student_number = ?", [req.params.code, req.session.user]);
         db.close();
         res.send("succes!");
     } else {
@@ -216,7 +232,7 @@ app.post("/leave/:code", (req, res) => {
 });
 
 
-// --- // protected pages
+// --- // protected pages // no database access
 
 app.get("/account", (req, res) => {
     if (req.session.user) {
@@ -259,7 +275,7 @@ app.get("/browse/courses/:code", (req, res) => {
 });
 
 
-// --- // login, logout & registering
+// --- // login, logout & registering // all 3 methods sql protected
 
 app.get("/login", (req, res) => {
     if (req.session.user) {
@@ -285,7 +301,7 @@ app.get("/logout", (req, res) => {
 app.post("/register", (req, res) => {
     if (req.body.password == req.body.confirm_password) {
         const db = new sqlite3.Database(dbfile);
-        db.all("SELECT * FROM student WHERE student_number = " + req.body.student_number, (err, rows) => {
+        db.all("SELECT * FROM student WHERE student_number = ?", req.body.student_number, (err, rows) => {
             if (rows.length == 0) {
                 createUser(req);
                 res.redirect("/login");
@@ -314,7 +330,7 @@ async function createUser (req) {
 
 app.post("/login", async (req, res) => {
     const db = new sqlite3.Database(dbfile);
-    db.all("SELECT * FROM student WHERE student_number = " + req.body.student_number, async (err, rows) => {
+    db.all("SELECT * FROM student WHERE student_number = ?", req.body.student_number, async (err, rows) => {
         if (rows.count == 0) {
             // student number not found
             req.session.user = undefined;
