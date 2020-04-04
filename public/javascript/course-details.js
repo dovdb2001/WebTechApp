@@ -31,7 +31,9 @@ function drawCourse() {
     (document.getElementById("level")).append(document.createTextNode(course.level));
     (document.getElementById("faculty")).append(document.createTextNode(course.faculty));
     (document.getElementById("semester")).append(document.createTextNode(course.semester));
+    (document.getElementById("teacher")).append(document.createTextNode(course.teacher));
     (document.getElementById("description")).append(document.createTextNode(course.description));
+    (document.getElementById("image")).setAttribute("src", "/images/" + course.image_id);
 }
 
 function enrollment() {
