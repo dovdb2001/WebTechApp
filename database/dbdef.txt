@@ -19,8 +19,8 @@ CREATE TABLE course
     faculty CHAR (4) NOT NULL,
     semester INTERGER NOT NULL,
     teacher CHAR(255) NOT NULL,
-    description CHAR(2000) NOT NULL,
     image_id CHAR(45) NOT NULL,
+    description CHAR(2000) NOT NULL,
     
     PRIMARY KEY (code)
 );
