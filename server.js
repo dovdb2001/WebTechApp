@@ -127,12 +127,64 @@ app.get("/enrollable/:code", (req, res) => {
 // -- // updating account info
 
 app.post("/account/update/info", (req, res) => {
-
+    if (req.session.user) {
+        updateInformation(req);
+        res.redirect("/account");
+    } else {
+        res.send("You must be logged in to access account information");
+    }
 });
 
 app.post("/account/update/pwd", (req, res) => {
+    if (req.session.user) {
+        const db = new sqlite3.Database(dbfile);
+        db.all("SELECT * FROM student WHERE student_number = " + req.session.user, async (err, rows) => {
+            if (await bcrypt.compare(req.body.old_password, rows[0].password)) {
+                if (req.body.new_password == req.body.confirm_new_password) {
+                    updatePassword(req.session.user, req.body.new_password);
+                    res.redirect("/account");
+                } else {
+                    // new passwords don't match
+                    res.redirect("/account/update");
+                }
+            } else {
+                // old password incorrect
+                res.redirect("/account/update");
+            }
+        });
+        db.close();
+    } else {
+        res.send("You must be logged in to access account information");
+    }
 
+
+    // first check if old password is valid
+
+    // check if the two new passwords are equal
+
+    // update the password
 });
+
+async function updatePassword(student_number, new_password) {
+    const hashedPassword = await bcrypt.hash(new_password, 10);
+    const db = new sqlite3.Database(dbfile);
+    db.run("UPDATE student SET password = '" + hashedPassword + "' WHERE student_number = " + student_number);
+    db.close();
+}
+
+function updateInformation(req) {
+    const db = new sqlite3.Database(dbfile);
+    db.run("UPDATE student SET first_name = '" + req.body.first_name + "', last_name = '" + req.body.last_name + "', programme = '" + req.body.programme + "', academic_level = '" + req.body.level + "' WHERE student_number = " + req.session.user);
+    db.close();
+
+    verifyEnrolledCourses(req.session.user, req.body.level, req.body.programme)
+}
+
+function verifyEnrolledCourses(student_number, level, programme) {  // new level and new programme
+    const db = new sqlite3.Database(dbfile);
+    db.run("DELETE FROM enrolled WHERE course_code NOT IN (SELECT code FROM course WHERE programme = '" + programme + "' AND level = '" + level + "')");
+    db.close();
+}
 
 // -- // enrolling and leaving courses
 
