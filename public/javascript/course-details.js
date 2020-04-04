@@ -56,14 +56,17 @@ function addEnrollment() {
 
 function btnPressed(event) {
     var req = new XMLHttpRequest();
-    req.open("POST", "/" + enrollmentMode + "/" + courseCode, true);
-    req.onreadystatechange = function () {
-        if (req.readyState == 4 && req.status == 200) {
-            alert(req.responseText);
-            enrollment();
+    var r = confirm("Are you sure you want to " + enrollmentMode + " the course: " + event.target.id + "?");
+    if (r == true) {
+        req.open("POST", "/" + enrollmentMode + "/" + courseCode, true);
+        req.onreadystatechange = function () {
+            if (req.readyState == 4 && req.status == 200) {
+                alert(req.responseText);
+                enrollment();
+            }
         }
+        req.send();
     }
-    req.send();
 }
 
 
