@@ -17,5 +17,5 @@ function draw(account) {
     (document.getElementById("first_name")).append(document.createTextNode(account[0].first_name));
     (document.getElementById("last_name")).append(document.createTextNode(account[0].last_name));
     (document.getElementById("programme")).append(document.createTextNode(account[0].programme));
-    (document.getElementById("academic_level")).append(document.createTextNode(account[0].academic_level));
+    (document.getElementById("level")).append(document.createTextNode(account[0].academic_level));
 }

@@ -124,6 +124,16 @@ app.get("/enrollable/:code", (req, res) => {
 });
 
 
+// -- // updating account info
+
+app.post("/account/update/info", (req, res) => {
+
+});
+
+app.post("/account/update/pwd", (req, res) => {
+
+});
+
 // -- // enrolling and leaving courses
 
 app.post("/enroll/:code", (req, res) => {
@@ -154,6 +164,14 @@ app.post("/leave/:code", (req, res) => {
 app.get("/account", (req, res) => {
     if (req.session.user) {
         res.sendFile(path.join(__dirname, "/views/account.html"));
+    } else {
+        res.redirect("/");
+    }
+});
+
+app.get("/account/update", (req, res) => {
+    if (req.session.user) {
+        res.sendFile(path.join(__dirname, "/views/account-update.html"));
     } else {
         res.redirect("/");
     }
