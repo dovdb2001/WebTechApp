@@ -1,0 +1,11 @@
+GET / 304 - - 4.468 ms
+GET /courses/*/*/*/*/0 304 - - 4.649 ms
+GET / 304 - - 3.493 ms
+GET /courses/*/*/*/*/0 304 - - 4.403 ms
+GET /courses/INFOMLHVL 304 - - 0.553 ms
+GET /course-info/INFOMLHVL 304 - - 1.049 ms
+GET /enrollable/INFOMLHVL 304 - - 0.762 ms
+GET /courses/WBMV13005 304 - - 3.874 ms
+GET /enrollable/WBMV13005 304 - - 1.802 ms
+GET /course-info/WBMV13005 304 - - 5.499 ms
+GET /images/RLemhoff.jpg 404 158 - 1.466 ms
