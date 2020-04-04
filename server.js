@@ -4,6 +4,7 @@ const path = require("path");
 const bcrypt = require("bcryptjs");
 const session = require("express-session");
 const sqlite3 = require("sqlite3").verbose();
+const morgan = require('morgan');
 
 const app = express();
 const server = app.listen (3000);
@@ -11,11 +12,13 @@ const dbfile = path.join(__dirname, "/database/main.db");
 
 app.use(express.urlencoded({extended: false}));
 app.use(express.static("public"));
+app.use(morgan(":method :url :status :res[content-length] - :response-time ms"));
 app.use(session({
     secret: "secret",
     resave: false,
     saveUninitialized: false
 }));
+
 
 // --- // public pages
 
