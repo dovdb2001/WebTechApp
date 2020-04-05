@@ -22,7 +22,6 @@ app.use(session({
     saveUninitialized: false
 }));
 
-
 // --- // public pages // no database access
 
 app.get("/", (req, res) => {

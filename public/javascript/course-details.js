@@ -118,7 +118,7 @@ function drawReview(review) {
         startRating = review.rating + " stars";
     }
 
-    addTextNode(review.first_name + ", " + startRating, div);
+    addTextNode(review.first_name + ": " + startRating, div);
     addTextNode(review.content, div);
 
     document.body.append(div);
