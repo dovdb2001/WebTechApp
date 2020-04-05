@@ -10,6 +10,7 @@ if(document.getElementById("rating_form")) {
 }
 
 getCourse();
+drawRating();
 enrollment();
 getReviews();
 
@@ -39,6 +40,17 @@ function drawCourse() {
     (document.getElementById("teacher")).append(document.createTextNode(course.teacher));
     (document.getElementById("description")).append(document.createTextNode(course.description));
     (document.getElementById("image")).setAttribute("src", "/images/" + course.image_id);
+}
+
+function drawRating() {
+    var req = new XMLHttpRequest()
+    req.open("GET", "/reviews/rating/" + courseCode, true);
+    req.onreadystatechange = function () {
+        if (req.readyState == 4 && req.status == 200) {
+            (document.getElementById("rating")).append(document.createTextNode(req.responseText));
+        }
+    }
+    req.send();
 }
 
 function enrollment() {

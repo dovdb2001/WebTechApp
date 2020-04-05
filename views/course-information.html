@@ -79,6 +79,14 @@
             </tr>
             <tr>
                 <td>
+                    <b>Avg. student rating</b>
+                </td>
+                <td id="rating">
+
+                </td>
+            </tr>
+            <tr>
+                <td>
                     <b>description</b>
                 </td>
                 <td id="description" colspan="3">
@@ -94,11 +102,11 @@
         <div class="container">
             <form action="/reviews/add" method="POST" id="rating_form">
                 <select name="rating">
+                    <option value="5">5 stars</option>
+                    <option value="4">4 stars</option>
+                    <option value="3">3 stars</option>
+                    <option value="2">2 stars</option>
                     <option value="1">1 star</option>
-                    <option value="2">2 star</option>
-                    <option value="3">3 star</option>
-                    <option value="4">4 star</option>
-                    <option value="5">5 star</option>
                 </select>
 
                 <textarea rows="4" cols="40" placeholder="your review" name="content"></textarea>

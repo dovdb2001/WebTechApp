@@ -232,13 +232,32 @@ app.post("/leave/:code", (req, res) => {
 });
 
 
-// -- // adding and getting reviews
+// -- // adding and getting reviews // all 3 methods sql & xss protected
 
 app.get("/reviews/:code", (req, res) => {
     const db = new sqlite3.Database(dbfile);
     db.all("SELECT * FROM ( SELECT * FROM review NATURAL JOIN ( SELECT student_number, first_name FROM student ) ) WHERE course_code = ?", sanitizer.sanitize(req.params.code), (err, rows) => {
         console.log(rows);
         res.send(rows);
+    });
+    db.close();
+});
+
+app.get("/reviews/rating/:code", (req, res) => {
+    const db = new sqlite3.Database(dbfile);
+    db.all("SELECT rating FROM review WHERE course_code = ? ", sanitizer.sanitize(req.params.code), (err, rows) => {
+        console.log(rows);
+
+        if (rows.length == 0) {
+            res.send(0);
+        } else {
+            var total = 0;
+            for (var i = 0; i < rows.length; i++) {
+                total += rows[i].rating;
+            }
+            var avg = total / rows.length;
+            res.send(avg.toFixed(1));
+        }
     });
     db.close();
 });
@@ -300,7 +319,7 @@ app.get("/browse/courses/:code", (req, res) => {
 });
 
 
-// --- // login, logout & registering // all 3 & xss methods sql protected
+// --- // login, logout & registering // all 3 methods sql & xss protected
 
 app.get("/login", (req, res) => {
     if (req.session.user) {
