@@ -92,16 +92,16 @@
         <h2>Rate this course</h2>
 
         <div class="container">
-            <form action="/rate" method="POST">
-                <select>
-                    <option value="">1 star</option>
-                    <option value="">2 star</option>
-                    <option value="">3 star</option>
-                    <option value="">4 star</option>
-                    <option value="">5 star</option>
+            <form action="/reviews/add" method="POST" id="rating_form">
+                <select name="rating">
+                    <option value="1">1 star</option>
+                    <option value="2">2 star</option>
+                    <option value="3">3 star</option>
+                    <option value="4">4 star</option>
+                    <option value="5">5 star</option>
                 </select>
 
-                <textarea rows="4" cols="40" placeholder="your review"></textarea>
+                <textarea rows="4" cols="40" placeholder="your review" name="content"></textarea>
 
                 <br/>
 

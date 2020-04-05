@@ -35,3 +35,16 @@ CREATE TABLE enrolled
     FOREIGN KEY (course_code) REFERENCES course (code)
 );
 
+CREATE TABLE review
+(
+    student_number INTERGER NOT NULL, 
+    course_code CHAR(9) NOT NULL,
+    rating INTERGER NOT NULL,
+    content CHAR(500) NOT NULL,
+    review_id INTERGER NOT NULL,
+
+    PRIMARY KEY (review_id),
+    FOREIGN KEY (student_number) REFERENCES student (student_number),
+    FOREIGN KEY (course_code) REFERENCES course (code)
+);
+

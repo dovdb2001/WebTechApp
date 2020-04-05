@@ -232,6 +232,31 @@ app.post("/leave/:code", (req, res) => {
 });
 
 
+// -- // adding and getting reviews
+
+app.get("/reviews/:code", (req, res) => {
+    const db = new sqlite3.Database(dbfile);
+    db.all("SELECT * FROM ( SELECT * FROM review NATURAL JOIN ( SELECT student_number, first_name FROM student ) ) WHERE course_code = ?", sanitizer.sanitize(req.params.code), (err, rows) => {
+        console.log(rows);
+        res.send(rows);
+    });
+    db.close();
+});
+
+app.post("/reviews/add/:code", (req, res) => {
+    if (req.session.user) {
+        const db = new sqlite3.Database(dbfile);
+        db.all("SELECT * FROM review", (err, rows) => {
+            db.run("INSERT INTO review VALUES (?, ?, ?, ?, ?)", [sanitizer.sanitize(req.session.user), sanitizer.sanitize(req.params.code), sanitizer.sanitize(req.body.rating), sanitizer.sanitize(req.body.content), rows.length]);
+        });
+        db.close();
+        res.redirect("/browse/courses/" + req.params.code);
+    } else {
+        res.send("You must be logged in to review a course");
+    }
+});
+
+
 // --- // protected pages // no database access
 
 app.get("/account", (req, res) => {

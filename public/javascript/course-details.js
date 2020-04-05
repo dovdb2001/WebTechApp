@@ -5,8 +5,13 @@ var enrollmentMode = "NA";
 var btn = document.createElement("button");
 btn.addEventListener("click", btnPressed);
 
+if(document.getElementById("rating_form")) {
+    document.getElementById("rating_form").setAttribute("action", "/reviews/add/" + courseCode);
+}
+
 getCourse();
 enrollment();
+getReviews();
 
 function getCourse() {
     var req = new XMLHttpRequest()
@@ -52,7 +57,7 @@ function enrollment() {
 function addEnrollment() {
     if (enrollmentMode == "enroll" || enrollmentMode == "leave") {
         btn.textContent = enrollmentMode;
-        document.body.append(btn);
+        document.getElementById("table").append(btn);
     }
 }
 
@@ -70,5 +75,58 @@ function btnPressed(event) {
         req.send();
     }
 }
+
+function getReviews() {
+    var req = new XMLHttpRequest()
+    console.log(courseCode);
+    req.open("GET", "/reviews/" + courseCode, true);
+    req.onreadystatechange = function () {
+        if (req.readyState == 4 && req.status == 200) {
+            console.log(req.responseText);
+            drawReviews(JSON.parse(req.responseText));
+        }
+    }
+    req.send();
+}
+
+function drawReviews(reviews) {
+    for (var i = 0; i < reviews.length; i++) {
+        drawReview(reviews[i]);
+    }
+}
+
+function drawReview(review) {
+    var div = document.createElement("div");
+    div.setAttribute("class", "container");
+
+    var startRating = "";
+    if (review.rating == "1") {
+        startRating = "1 star";
+    } else {
+        startRating = review.rating + " stars";
+    }
+
+    addTextNode(review.first_name + ", " + startRating, div);
+    addTextNode(review.content, div);
+
+    document.body.append(div);
+}
+
+function addTextNode(text, body) {
+    body.append(document.createTextNode(text));
+    body.append(document.createElement("br"));
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
