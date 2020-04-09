@@ -1252,3 +1252,7 @@ GET /courses/*/*/*/*/0 304 - - 1.840 ms
 GET / 304 - - 4.080 ms
 GET / 304 - - 4.271 ms
 GET /courses/*/*/*/*/0 304 - - 5.030 ms
+GET / 200 2804 - 5.707 ms
+GET /courses/*/*/*/*/0 304 - - 6.067 ms
+GET / 304 - - 3.991 ms
+GET /courses/*/*/*/*/0 304 - - 4.683 ms

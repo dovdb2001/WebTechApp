@@ -8,13 +8,12 @@ const morgan = require('morgan');
 const fs = require("fs");
 const sanitizer = require("sanitizer");
 const favicon = require("serve-favicon");
-const flash = require('connect-flash');
 
 const app = express();
 const server = app.listen (3000);
 const dbfile = path.join(__dirname, "/database/main.db");
 
-
+app.use(favicon(path.join(__dirname, "/public/favicon.ico")));
 app.use(express.urlencoded({extended: false}));
 app.use(express.static("public"));
 app.use(morgan(":method :url :status :res[content-length] - :response-time ms", {stream: fs.createWriteStream('./access.log', {flags: "a"})}));
@@ -25,18 +24,11 @@ app.use(session({
     saveUninitialized: false
 }));
 
-app.use(favicon(path.join(__dirname, "/public/favicon.ico")));
-
-app.get("/favicon.ico", (req, res) => {
-    console.log("hello");
-})
-
 
 // --- // public pages // no database access
 
 app.get("/", (req, res) => {
     if (req.session.user) {
-        req.flash("hello");
         res.redirect("/browse");
     } else {
         res.sendFile(path.join(__dirname, "/views/index.html"));
