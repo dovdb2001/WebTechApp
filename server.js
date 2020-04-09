@@ -7,10 +7,13 @@ const sqlite3 = require("sqlite3").verbose();
 const morgan = require('morgan');
 const fs = require("fs");
 const sanitizer = require("sanitizer");
+const favicon = require("serve-favicon");
+const flash = require('connect-flash');
 
 const app = express();
 const server = app.listen (3000);
 const dbfile = path.join(__dirname, "/database/main.db");
+
 
 app.use(express.urlencoded({extended: false}));
 app.use(express.static("public"));
@@ -22,10 +25,18 @@ app.use(session({
     saveUninitialized: false
 }));
 
+app.use(favicon(path.join(__dirname, "/public/favicon.ico")));
+
+app.get("/favicon.ico", (req, res) => {
+    console.log("hello");
+})
+
+
 // --- // public pages // no database access
 
 app.get("/", (req, res) => {
     if (req.session.user) {
+        req.flash("hello");
         res.redirect("/browse");
     } else {
         res.sendFile(path.join(__dirname, "/views/index.html"));
@@ -342,7 +353,7 @@ app.get("/logout", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-    if (req.body.password == req.body.confirm_password) {
+    if (req.body.password == req.body.confirm_password && (req.body.student_number.toString()).length == 7) {
         const db = new sqlite3.Database(dbfile);
         db.all("SELECT * FROM student WHERE student_number = ?", sanitizer.sanitize(req.body.student_number), (err, rows) => {
             if (rows.length == 0) {
@@ -394,41 +405,8 @@ app.post("/login", async (req, res) => {
 });
 
 
+// -- // 404 not found
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+app.get('*', function(req, res){
+  res.send("404 NOT FOUND", 404);
+});

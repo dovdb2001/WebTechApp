@@ -8,19 +8,21 @@
         <div class="float-container">
             <h1> login </h1>
 
-            <form action="/login" method="POST">
+            <form action="/login" method="POST" id="login">
                 <div>
-                    <input type="number" id="student_number" name="student_number" placeholder="student number" required>
+                    <input type="text" id="student_number" name="student_number" placeholder="student number" pattern="[0-9]+" autofocus required>
                 </div>
                  <div>
                     <input type="password" id="password" name="password" placeholder="password" required>
                 </div>
-                <button type="submit">Login</button>
+                <button type="submit" id="btn">Login</button>
             </form>
 
             <hr>
 
             Don't have an account? <a href="/register">register</a>
         </div>
+
+        <script src="javascript/login.js"></script>
     </body>
 </html>
