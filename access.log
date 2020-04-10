@@ -1583,3 +1583,17 @@ GET /reviews/INFOIAG 304 - - 1.723 ms
 GET /images/PYolum.jpg 304 - - 0.444 ms
 GET / 304 - - 0.366 ms
 GET /courses/*/*/*/*/0 304 - - 2.822 ms
+GET / 304 - - 0.462 ms
+GET /courses/*/*/*/*/0 304 - - 1.539 ms
+GET /courses/INFOMLHVL 200 2759 - 0.643 ms
+GET /enrollable/INFOMLHVL 304 - - 0.539 ms
+GET /reviews/rating/INFOMLHVL 304 - - 1.316 ms
+GET /course-info/INFOMLHVL 304 - - 1.676 ms
+GET /reviews/INFOMLHVL 304 - - 0.809 ms
+GET / 304 - - 0.882 ms
+GET /courses/*/*/*/*/0 304 - - 1.821 ms
+GET /courses/INFOIAG 304 - - 0.451 ms
+GET /enrollable/INFOIAG 304 - - 0.562 ms
+GET /course-info/INFOIAG 304 - - 1.668 ms
+GET /reviews/rating/INFOIAG 304 - - 2.080 ms
+GET /reviews/INFOIAG 304 - - 0.982 ms
