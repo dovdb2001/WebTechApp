@@ -14,6 +14,5 @@ function getAccount() {
 function draw(account) {
     (document.getElementById("first_name")).value = account.first_name;
     (document.getElementById("last_name")).value = account.last_name;
-    (document.getElementById("programme")).value = account.programme;
-    (document.getElementById("level")).value = account.academic_level;
+    (document.getElementById("level_programme")).value = account.academic_level + " " + account.programme;
 }

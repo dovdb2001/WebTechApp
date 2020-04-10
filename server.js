@@ -195,8 +195,9 @@ async function updatePassword(student_number, new_password) {
 }
 
 function updateInformation(req) {
+    var levelProgramme = (req.body.level_programme).split("|");
     const db = new sqlite3.Database(dbfile);
-    db.run("UPDATE student SET first_name = ?, last_name = ?, programme = ?, academic_level = ? WHERE student_number = ?", [sanitizer.sanitize(req.body.first_name), sanitizer.sanitize(req.body.last_name), sanitizer.sanitize(req.body.programme), sanitizer.sanitize(req.body.level), sanitizer.sanitize(req.session.user)]);
+    db.run("UPDATE student SET first_name = ?, last_name = ?, programme = ?, academic_level = ? WHERE student_number = ?", [sanitizer.sanitize(req.body.first_name), sanitizer.sanitize(req.body.last_name), sanitizer.sanitize(levelProgramme[1]), sanitizer.sanitize(levelProgramme[0]), sanitizer.sanitize(req.session.user)]);
     db.close();
 
     verifyEnrolledCourses(req.session.user, req.body.level, req.body.programme)
@@ -362,8 +363,9 @@ app.post("/register", (req, res) => {
 });
 
 async function createUser (req) {
+    var levelProgramme = (req.body.level_programme).split("|");
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const user = [sanitizer.sanitize(req.body.student_number), sanitizer.sanitize(hashedPassword), sanitizer.sanitize(req.body.first_name), sanitizer.sanitize(req.body.last_name), sanitizer.sanitize(req.body.programme), sanitizer.sanitize(req.body.level)];
+    const user = [sanitizer.sanitize(req.body.student_number), sanitizer.sanitize(hashedPassword), sanitizer.sanitize(req.body.first_name), sanitizer.sanitize(req.body.last_name), sanitizer.sanitize(levelProgramme[1]), sanitizer.sanitize(levelProgramme[0])];
 
     const db = new sqlite3.Database(dbfile);
     db.run("INSERT INTO student VALUES (?, ?, ?, ?, ?, ?)", user);
