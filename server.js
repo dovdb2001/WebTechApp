@@ -239,7 +239,6 @@ app.post("/leave/:code", (req, res) => {
 app.get("/reviews/:code", (req, res) => {
     const db = new sqlite3.Database(dbfile);
     db.all("SELECT * FROM ( SELECT * FROM review NATURAL JOIN ( SELECT student_number, first_name FROM student ) ) WHERE course_code = ?", sanitizer.sanitize(req.params.code), (err, rows) => {
-        console.log(rows);
         res.send(rows);
     });
     db.close();
@@ -248,7 +247,6 @@ app.get("/reviews/:code", (req, res) => {
 app.get("/reviews/rating/:code", (req, res) => {
     const db = new sqlite3.Database(dbfile);
     db.all("SELECT rating FROM review WHERE course_code = ? ", sanitizer.sanitize(req.params.code), (err, rows) => {
-        console.log(rows);
 
         if (rows.length == 0) {
             res.send(0);
@@ -353,14 +351,12 @@ app.post("/register", (req, res) => {
                 res.redirect("/login");
             } else {
                 // student number already exists
-                console.log("student number already exists");
                 res.redirect("/register");
             }
         });
         db.close();
     } else {
         // passwords do not match
-        console.log("passwords do not match");
         res.redirect("/register");
     }
 });
