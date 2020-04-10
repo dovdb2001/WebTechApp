@@ -1575,3 +1575,11 @@ GET /course-info/INFOIAG 304 - - 2.475 ms
 GET /reviews/rating/INFOIAG 304 - - 2.440 ms
 GET /reviews/INFOIAG 304 - - 2.080 ms
 GET /images/PYolum.jpg 200 989 - 0.467 ms
+GET /courses/INFOIAG 304 - - 0.521 ms
+GET /course-info/INFOIAG 304 - - 1.154 ms
+GET /reviews/rating/INFOIAG 304 - - 1.551 ms
+GET /enrollable/INFOIAG 304 - - 0.716 ms
+GET /reviews/INFOIAG 304 - - 1.723 ms
+GET /images/PYolum.jpg 304 - - 0.444 ms
+GET / 304 - - 0.366 ms
+GET /courses/*/*/*/*/0 304 - - 2.822 ms
