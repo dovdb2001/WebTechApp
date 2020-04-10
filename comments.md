@@ -1,14 +1,35 @@
-
-
- * [tree-md](./tree-md)
- * [dir2](./dir2)
-   * [file21.ext](./dir2/file21.ext)
-   * [file22.ext](./dir2/file22.ext)
-   * [file23.ext](./dir2/file23.ext)
- * [dir1](./dir1)
-   * [file11.ext](./dir1/file11.ext)
-   * [file12.ext](./dir1/file12.ext)
- * [file_in_root.ext](./file_in_root.ext)
- * [README.md](./README.md)
- * [dir3](./dir3)
+.
+├── README.md
+├── access.log
+├── comments.md
+├── database
+│   ├── dbdef.txt
+│   ├── dbfill.txt
+│   └── main.db
+├── node_modules
+├── package-lock.json
+├── package.json
+├── public
+│   ├── favicon.ico
+│   ├── images
+│   ├── javascript
+│   │   ├── account-update.js
+│   │   ├── account.js
+│   │   ├── browse.js
+│   │   ├── course-details.js
+│   │   └── enrolled.js
+│   ├── main.css
+│   └── mamida_logo.png
+├── server.js
+└── views
+    ├── account-update.html
+    ├── account.html
+    ├── browse.html
+    ├── course-details.html
+    ├── course-information.html
+    ├── enrolled-courses.html
+    ├── index.html
+    ├── login.html
+    ├── not-found.html
+    └── register.html
  
