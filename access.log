@@ -1443,3 +1443,12 @@ GET /browse 200 2608 - 0.664 ms
 GET /courses/*/*/*/*/0 304 - - 2.366 ms
 GET /account 200 1746 - 0.618 ms
 GET /account/info 304 - - 1.893 ms
+GET /account 302 46 - 5.841 ms
+GET / 304 - - 1.681 ms
+GET /courses/*/*/*/*/0 304 - - 4.910 ms
+GET /bla 200 812 - 2.301 ms
+GET / 304 - - 0.566 ms
+GET /courses/*/*/*/*/0 304 - - 1.802 ms
+GET / 304 - - 0.521 ms
+GET /courses/*/*/*/*/0 304 - - 2.061 ms
+GET /login 200 997 - 5.433 ms

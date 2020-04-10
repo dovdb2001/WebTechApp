@@ -110,7 +110,7 @@ app.get("/courses/:title/:programme/:level/:semester/:block", (req, res) => {
 
 });
 
-// sends an JSON object with the account infomation of the user, only if the user is logged in
+// sends an JSON object with the account infomation of the user, only if the user is logged in. if the user is not logged in, no information will be send (of course)
 app.get("/account/info", (req, res) => {
     if (req.session.user) {
         const db = new sqlite3.Database(dbfile);
@@ -123,7 +123,7 @@ app.get("/account/info", (req, res) => {
     }
 });
 
-
+// sends an array of JSON object consisting of course codes corresponding to the courses that the user is currently enrolled in, only if the user is logged in. if the user is not logged in, no information will be send (of course)
 app.get("/account/courses", (req, res) => {
     if (req.session.user) {
         const db = new sqlite3.Database(dbfile);
@@ -136,7 +136,7 @@ app.get("/account/courses", (req, res) => {
     }
 });
 
-
+// checks if the user can inroll in a given course
 app.get("/enrollable/:code", (req, res) => {
     if (req.session.user) {
         const db = new sqlite3.Database(dbfile);
@@ -428,5 +428,5 @@ app.post("/login", async (req, res) => {
 
 app.get('*', function(req, res){
     req.session.user = undefined;
-  res.send("404 NOT FOUND", 404);
+    res.sendFile(path.join(__dirname, "/views/not-found.html"));
 });
