@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
     <head>
         <title>Update Account</title>
@@ -8,17 +8,16 @@
         <meta name="description" content="Update your account information for Mamida Student">
     </head>
 
-    <header>
-        <h1><a href="/browse">mamida student</a></h1>
-        <ul>
-            <li><a href="/browse">Courses</a></li>
-            <li><a href="/enrolled-courses">Enrolled courses</a></li>
-            <li><a href="/account">Account</a></li>
-            <li><a href="/logout">Logout</a></li>
-        </ul>
-    </header>
-
     <body>
+        <header>
+            <h1><a href="/browse">mamida student</a></h1>
+            <ul>
+                <li><a href="/browse">Courses</a></li>
+                <li><a href="/enrolled-courses">Enrolled courses</a></li>
+                <li><a href="/account">Account</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </header>
         <h1>Update account information</h1>
 
         <form action="/account/update/info" method="POST">
@@ -34,7 +33,7 @@
 
             <div>
                 <label for="level_programme">Programme</label>
-                <select name="level_programme">
+                <select name="level_programme" id="level_programme">
                     <option value="BSc|Computer Science">BSc - Computer Science</option>
                     <option value="BSc|Physics and Astronomy">BSc - Physics and Astronomy</option>
                     <option value="BSc|Mathematics">BSc - Mathematics</option>
@@ -53,18 +52,18 @@
 
         <form action="/account/update/pwd" method="POST">
             <div>
-                <label for="password">Old password</label>
-                <input type="password" id="password" name="old_password" required>
+                <label for="old_pass">Old password</label>
+                <input type="password" id="old_pass" name="old_password" required>
             </div>
 
             <div>
-                <label for="password">New password</label>
-                <input type="password" id="password" name="new_password" required>
+                <label for="new_pass">New password</label>
+                <input type="password" id="new_pass" name="new_password" required>
             </div>
 
             <div>
-                <label for="password">Confirm new password</label>
-                <input type="password" id="confirm_password" name="confirm_new_password" required>
+                <label for="conf_pass">Confirm new password</label>
+                <input type="password" id="conf_pass" name="confirm_new_password" required>
             </div>
             <button type="submit">Update</button>
         </form>

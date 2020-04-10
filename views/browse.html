@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
     <head>
         <title>Courses</title>
@@ -8,58 +8,57 @@
         <meta name="description" content="All the courses in Mamida Student are displayed here">
     </head>
 
-    <header>
-        <h1><a href="/browse">mamida student</a></h1>
-        <ul>
-            <li><a href="/browse">Courses</a></li>
-            <li><a href="/enrolled-courses">Enrolled courses</a></li>
-            <li><a href="/account">Account</a></li>
-            <li><a href="/logout">Logout</a></li>
-        </ul>
-    </header>
-
     <body>
+        <header>
+            <h1><a href="/browse">mamida student</a></h1>
+            <ul>
+                <li><a href="/browse">Courses</a></li>
+                <li><a href="/enrolled-courses">Enrolled courses</a></li>
+                <li><a href="/account">Account</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </header>
         <div id=search>
-                <h2>Search</h2>
+            <h2>Search</h2>
 
-                <div class="container">
-                    <div>
-                        <input type="text" name="course_name" id="course_name" placeholder="course name">
-                    </div>
-
-                    <div>
-                        <select name="programme" id="programme">
-                            <option value="*">All programmes</option>
-                            <option value="Computer Science">Computer Science</option>
-                            <option value="Physics and Astronomy">Physics and Astronomy</option>
-                            <option value="Mathematics">Mathematics</option>
-                            <option value="Artificial Intelegance">Artificial Intelegance</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <select name="level" id="level">
-                            <option value="*">All academic levels</option>
-                            <option value="BSc">BSc</option>
-                            <option value="MSc">MSc</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <select name="semester" id="semester">
-                            <option value="*">All semesters</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                        </select>
-                    </div>
-
-                    <hr>
-
-                    <button id="search_btn">Search</button>
+            <div class="container">
+                <div>
+                    <input type="text" name="course_name" id="course_name" placeholder="course name">
                 </div>
+
+                <div>
+                    <select name="programme" id="programme">
+                        <option value="*">All programmes</option>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Physics and Astronomy">Physics and Astronomy</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Artificial Intelegance">Artificial Intelegance</option>
+                    </select>
+                </div>
+
+                <div>
+                    <select name="level" id="level">
+                        <option value="*">All academic levels</option>
+                        <option value="BSc">BSc</option>
+                        <option value="MSc">MSc</option>
+                    </select>
+                </div>
+
+                <div>
+                    <select name="semester" id="semester">
+                        <option value="*">All semesters</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                    </select>
+                </div>
+
+                <hr>
+
+                <button id="search_btn">Search</button>
             </div>
+        </div>
 
 
         <div id="courses">
