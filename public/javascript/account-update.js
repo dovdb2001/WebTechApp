@@ -1,5 +1,6 @@
 getAccount();
 
+// get the account information from the server
 function getAccount() {
     var req = new XMLHttpRequest()
     req.open("GET", "/account/info", true);
@@ -11,6 +12,7 @@ function getAccount() {
     req.send();
 }
 
+// gets the appropriate html objects and added the found values to the webpage
 function draw(account) {
     (document.getElementById("first_name")).value = account.first_name;
     (document.getElementById("last_name")).value = account.last_name;

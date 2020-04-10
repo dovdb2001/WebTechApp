@@ -110,7 +110,7 @@ app.get("/courses/:title/:programme/:level/:semester/:block", (req, res) => {
 
 });
 
-// sends an JSON object with the account infomation of the user, only if the user is logged in
+// sends an JSON object with the account infomation of the user, only if the user is logged in. if the user is not logged in, no information will be send (of course)
 app.get("/account/info", (req, res) => {
     if (req.session.user) {
         const db = new sqlite3.Database(dbfile);
@@ -123,7 +123,7 @@ app.get("/account/info", (req, res) => {
     }
 });
 
-
+// sends an array of JSON object consisting of course codes corresponding to the courses that the user is currently enrolled in, only if the user is logged in. if the user is not logged in, no information will be send (of course)
 app.get("/account/courses", (req, res) => {
     if (req.session.user) {
         const db = new sqlite3.Database(dbfile);
@@ -136,7 +136,7 @@ app.get("/account/courses", (req, res) => {
     }
 });
 
-
+// checks if the user can inroll in a given course, if the user is not logged in the response is 'NA'. if the user is logged in but the programme and/or the acadamic level doesn't match the response is 'NA'. if the user is logged in and programme and level matches the the response is 'true', if the user is logged in and programme and level matches and the user is already inrolled in the course, the response is 'false'
 app.get("/enrollable/:code", (req, res) => {
     if (req.session.user) {
         const db = new sqlite3.Database(dbfile);
@@ -162,7 +162,7 @@ app.get("/enrollable/:code", (req, res) => {
 
 // -- // updating account info // all 4 methods sql & xss protected
 
-
+// only if the user is logged in will the account of the user be updated with the given new attributes
 app.post("/account/update/info", (req, res) => {
     if (req.session.user) {
         updateInformation(req);
@@ -172,7 +172,7 @@ app.post("/account/update/info", (req, res) => {
     }
 });
 
-
+// only if the user is logged in, the old password was entered correctly and the two new given passwords match, will the password of the user be updated with the given new password
 app.post("/account/update/pwd", (req, res) => {
     if (req.session.user) {
         const db = new sqlite3.Database(dbfile);
@@ -196,7 +196,7 @@ app.post("/account/update/pwd", (req, res) => {
     }
 });
 
-
+// hashes the new password and updates the database
 async function updatePassword(student_number, new_password) {
     const hashedPassword = await bcrypt.hash(new_password, 10);
     const db = new sqlite3.Database(dbfile);
@@ -204,7 +204,7 @@ async function updatePassword(student_number, new_password) {
     db.close();
 }
 
-
+// update the information of the user in the databse
 function updateInformation(req) {
     var levelProgramme = (req.body.level_programme).split("|");
     const db = new sqlite3.Database(dbfile);
@@ -214,7 +214,7 @@ function updateInformation(req) {
     verifyEnrolledCourses(req.session.user, req.body.level, req.body.programme)
 }
 
-
+// unenrolls the user from any course that does not match the given level and programme
 function verifyEnrolledCourses(student_number, level, programme) {  // new level and new programme
     const db = new sqlite3.Database(dbfile);
     db.run("DELETE FROM enrolled WHERE course_code NOT IN (SELECT code FROM course WHERE programme = ? AND level = ?)", [sanitizer.sanitize(programme), sanitizer.sanitize(level)]);
@@ -224,7 +224,7 @@ function verifyEnrolledCourses(student_number, level, programme) {  // new level
 
 // -- // enrolling and leaving courses // 2 methods sql & xss protected
 
-
+// only if the user is logged in will the user be enrolled in the course with the given code
 app.post("/enroll/:code", (req, res) => {
     if (req.session.user) {
         const db = new sqlite3.Database(dbfile);
@@ -236,7 +236,7 @@ app.post("/enroll/:code", (req, res) => {
     }
 });
 
-
+// only if the user is logged in will the user be unenrolled from the course with the given code
 app.post("/leave/:code", (req, res) => {
     if (req.session.user) {
         const db = new sqlite3.Database(dbfile);
@@ -251,7 +251,7 @@ app.post("/leave/:code", (req, res) => {
 
 // -- // adding and getting reviews // all 3 methods sql & xss protected
 
-
+// returns an array of reviews relevant to the course with the given code
 app.get("/reviews/:code", (req, res) => {
     const db = new sqlite3.Database(dbfile);
     db.all("SELECT * FROM ( SELECT * FROM review NATURAL JOIN ( SELECT student_number, first_name FROM student ) ) WHERE course_code = ?", sanitizer.sanitize(req.params.code), (err, rows) => {
@@ -260,7 +260,7 @@ app.get("/reviews/:code", (req, res) => {
     db.close();
 });
 
-
+// returns the average rating for a course based on that course's reviews
 app.get("/reviews/rating/:code", (req, res) => {
     const db = new sqlite3.Database(dbfile);
     db.all("SELECT rating FROM review WHERE course_code = ? ", sanitizer.sanitize(req.params.code), (err, rows) => {
@@ -279,7 +279,7 @@ app.get("/reviews/rating/:code", (req, res) => {
     db.close();
 });
 
-
+// only if the user is logged in will a review be added, for the given course, to the database
 app.post("/reviews/add/:code", (req, res) => {
     if (req.session.user) {
         const db = new sqlite3.Database(dbfile);
@@ -296,7 +296,7 @@ app.post("/reviews/add/:code", (req, res) => {
 
 // --- // protected pages // no database access
 
-
+// if the user is logged in /views/account.html is send to the user. if the user is not logged in, the user will be redirected to /
 app.get("/account", (req, res) => {
     if (req.session.user) {
         res.sendFile(path.join(__dirname, "/views/account.html"));
@@ -305,7 +305,7 @@ app.get("/account", (req, res) => {
     }
 });
 
-
+// if the user is logged in /views/account-update.html is send to the user. if the user is not logged in, the user will be redirected to /
 app.get("/account/update", (req, res) => {
     if (req.session.user) {
         res.sendFile(path.join(__dirname, "/views/account-update.html"));
@@ -314,7 +314,7 @@ app.get("/account/update", (req, res) => {
     }
 });
 
-
+// if the user is logged in /views/enrolled-courses.html is send to the user. if the user is not logged in, the user will be redirected to /
 app.get("/enrolled-courses", (req, res) => {
     if (req.session.user) {
         res.sendFile(path.join(__dirname, "/views/enrolled-courses.html"));
@@ -323,7 +323,7 @@ app.get("/enrolled-courses", (req, res) => {
     }
 });
 
-
+// if the user is logged in /views/browse.html is send to the user. if the user is not logged in, the user will be redirected to /
 app.get("/browse", (req, res) => {
     if (req.session.user) {
         res.sendFile(path.join(__dirname, "/views/browse.html"));
@@ -332,7 +332,7 @@ app.get("/browse", (req, res) => {
     }
 });
 
-
+// if the user is logged in /views/course-information.html is send to the user. if the user is not logged in, the user will be redirected to /courses/:code
 app.get("/browse/courses/:code", (req, res) => {
     if (req.session.user) {
         res.sendFile(path.join(__dirname, "/views/course-information.html"));
@@ -344,31 +344,31 @@ app.get("/browse/courses/:code", (req, res) => {
 
 // --- // login, logout & registering // all 3 methods sql & xss protected
 
-
+// if the user is not logged in /views/login.html is send to the user. if the user is logged in, the user will be redirected to /browse
 app.get("/login", (req, res) => {
     if (req.session.user) {
-       res.redirect("/");
+       res.redirect("/browse");
     } else {
        res.sendFile(path.join(__dirname, "/views/login.html"));
     }
 });
 
-
+// if the user is not logged in /views/register.html is send to the user. if the user is logged in, the user will be redirected to /browse
 app.get("/register", (req, res) => {
     if (req.session.user) {
-       res.redirect("/");
+       res.redirect("/browse");
     } else {
        res.sendFile(path.join(__dirname, "/views/register.html"));
     }
 });
 
-
+// the session variable user is reset
 app.get("/logout", (req, res) => {
     req.session.user = undefined;
     res.redirect("/")
 });
 
-
+// the given attributes for a new account are checked, if no errors are found the new user is create and added to the database and the client is redirected to /login. if there is an error if the entered attributes the client is redirected back to /register
 app.post("/register", (req, res) => {
     if (req.body.password == req.body.confirm_password && (req.body.student_number.toString()).length == 7) {
         const db = new sqlite3.Database(dbfile);
@@ -388,7 +388,7 @@ app.post("/register", (req, res) => {
     }
 });
 
-
+// a new user is created and added to the database
 async function createUser (req) {
     var levelProgramme = (req.body.level_programme).split("|");
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -399,7 +399,7 @@ async function createUser (req) {
     db.close();
 }
 
-
+// if student number and password combination is valid the user will be redirected to /browse, if the student number and password combination in invalid the client will be redirected back to /login
 app.post("/login", async (req, res) => {
     const db = new sqlite3.Database(dbfile);
     db.all("SELECT * FROM student WHERE student_number = ?", sanitizer.sanitize(req.body.student_number), async (err, rows) => {
@@ -425,8 +425,8 @@ app.post("/login", async (req, res) => {
 
 // -- // 404 not found
 
-
+// if the requested page cannot be found /views/not-found.html is send to the user. the user is also preemptively logged out
 app.get('*', function(req, res){
     req.session.user = undefined;
-  res.send("404 NOT FOUND", 404);
+    res.sendFile(path.join(__dirname, "/views/not-found.html"));
 });
