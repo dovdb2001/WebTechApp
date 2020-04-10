@@ -1,17 +1,17 @@
 /* eslint-env node, es6 */
 const express = require("express");             // is used for the http webserver
 const path = require("path");                   // is used to create absolute paths to resources
-const bcrypt = require("bcryptjs");             // is used to hash
-const session = require("express-session");
-const sqlite3 = require("sqlite3").verbose();
-const morgan = require('morgan');
-const fs = require("fs");
-const sanitizer = require("sanitizer");
-const favicon = require("serve-favicon");
+const bcrypt = require("bcryptjs");             // is used to hash the users' passwords that are stored in the database
+const session = require("express-session");     // is used to manage the sessions
+const sqlite3 = require("sqlite3").verbose();   // is used for the database
+const morgan = require('morgan');               // is used as logger
+const fs = require("fs");                       // is used to write the output of the logger to file (access.log in our case)
+const sanitizer = require("sanitizer");         // is used to escape any dangerous character
+const favicon = require("serve-favicon");       // is used to serve the fav icon.ico
 
 const app = express();
 const server = app.listen (3000);
-const dbfile = path.join(__dirname, "/database/main.db");
+const dbfile = path.join(__dirname, "/database/main.db");   // the path to the database file
 
 app.use(favicon(path.join(__dirname, "/public/favicon.ico")));
 app.use(express.urlencoded({extended: false}));
@@ -27,6 +27,7 @@ app.use(session({
 
 // --- // public pages // no database access
 
+// if the user is not logged in index.html is send to the user. if the user is logged in, the user will be redirected to /browse
 app.get("/", (req, res) => {
     if (req.session.user) {
         res.redirect("/browse");
@@ -35,6 +36,7 @@ app.get("/", (req, res) => {
     }
 });
 
+// if the user is not logged in course-details.html is send to the user. if the user is logged in, the user will be redirected to /browse/courses/ and than the requested course code
 app.get("/courses/:code", (req, res) => {
     if (req.session.user) {
         res.redirect("/browse/courses/" + req.params.code);
@@ -46,6 +48,7 @@ app.get("/courses/:code", (req, res) => {
 
 // --- // getting specific information // 5 methods sql & xss protected
 
+// sends an JSON object with all information from the database pretending to the course with the requested code
 app.get("/course-info/:code", (req, res) => {
     const db = new sqlite3.Database(dbfile);
     db.all("SELECT * FROM course WHERE code = ?", sanitizer.sanitize(req.params.code), (err, rows) => {
@@ -54,6 +57,7 @@ app.get("/course-info/:code", (req, res) => {
     db.close();
 });
 
+// sends an array of JSON objects, each JSON object is an course. the array is filled based on the selected programme level and semester and any title that (partially) matches the given title. The array is sorted as required by the assignment, and the block variable indicates how many courses are already being displayed by the client
 app.get("/courses/:title/:programme/:level/:semester/:block", (req, res) => {
     var stmt = "SELECT * FROM course ";
     var end = "";
@@ -106,6 +110,7 @@ app.get("/courses/:title/:programme/:level/:semester/:block", (req, res) => {
 
 });
 
+// sends an JSON object with the account infomation of the user, only if the user is logged in
 app.get("/account/info", (req, res) => {
     if (req.session.user) {
         const db = new sqlite3.Database(dbfile);
@@ -118,6 +123,7 @@ app.get("/account/info", (req, res) => {
     }
 });
 
+
 app.get("/account/courses", (req, res) => {
     if (req.session.user) {
         const db = new sqlite3.Database(dbfile);
@@ -129,6 +135,7 @@ app.get("/account/courses", (req, res) => {
         res.send("You must be logged in to access account information");
     }
 });
+
 
 app.get("/enrollable/:code", (req, res) => {
     if (req.session.user) {
@@ -155,6 +162,7 @@ app.get("/enrollable/:code", (req, res) => {
 
 // -- // updating account info // all 4 methods sql & xss protected
 
+
 app.post("/account/update/info", (req, res) => {
     if (req.session.user) {
         updateInformation(req);
@@ -163,6 +171,7 @@ app.post("/account/update/info", (req, res) => {
         res.send("You must be logged in to access account information");
     }
 });
+
 
 app.post("/account/update/pwd", (req, res) => {
     if (req.session.user) {
@@ -187,12 +196,14 @@ app.post("/account/update/pwd", (req, res) => {
     }
 });
 
+
 async function updatePassword(student_number, new_password) {
     const hashedPassword = await bcrypt.hash(new_password, 10);
     const db = new sqlite3.Database(dbfile);
     db.run("UPDATE student SET password = ? WHERE student_number = ?", [sanitizer.sanitize(hashedPassword), sanitizer.sanitize(student_number)]);
     db.close();
 }
+
 
 function updateInformation(req) {
     var levelProgramme = (req.body.level_programme).split("|");
@@ -203,6 +214,7 @@ function updateInformation(req) {
     verifyEnrolledCourses(req.session.user, req.body.level, req.body.programme)
 }
 
+
 function verifyEnrolledCourses(student_number, level, programme) {  // new level and new programme
     const db = new sqlite3.Database(dbfile);
     db.run("DELETE FROM enrolled WHERE course_code NOT IN (SELECT code FROM course WHERE programme = ? AND level = ?)", [sanitizer.sanitize(programme), sanitizer.sanitize(level)]);
@@ -211,6 +223,7 @@ function verifyEnrolledCourses(student_number, level, programme) {  // new level
 
 
 // -- // enrolling and leaving courses // 2 methods sql & xss protected
+
 
 app.post("/enroll/:code", (req, res) => {
     if (req.session.user) {
@@ -222,6 +235,7 @@ app.post("/enroll/:code", (req, res) => {
         res.send("You must be logged in to access account information");
     }
 });
+
 
 app.post("/leave/:code", (req, res) => {
     if (req.session.user) {
@@ -237,6 +251,7 @@ app.post("/leave/:code", (req, res) => {
 
 // -- // adding and getting reviews // all 3 methods sql & xss protected
 
+
 app.get("/reviews/:code", (req, res) => {
     const db = new sqlite3.Database(dbfile);
     db.all("SELECT * FROM ( SELECT * FROM review NATURAL JOIN ( SELECT student_number, first_name FROM student ) ) WHERE course_code = ?", sanitizer.sanitize(req.params.code), (err, rows) => {
@@ -244,6 +259,7 @@ app.get("/reviews/:code", (req, res) => {
     });
     db.close();
 });
+
 
 app.get("/reviews/rating/:code", (req, res) => {
     const db = new sqlite3.Database(dbfile);
@@ -263,6 +279,7 @@ app.get("/reviews/rating/:code", (req, res) => {
     db.close();
 });
 
+
 app.post("/reviews/add/:code", (req, res) => {
     if (req.session.user) {
         const db = new sqlite3.Database(dbfile);
@@ -279,6 +296,7 @@ app.post("/reviews/add/:code", (req, res) => {
 
 // --- // protected pages // no database access
 
+
 app.get("/account", (req, res) => {
     if (req.session.user) {
         res.sendFile(path.join(__dirname, "/views/account.html"));
@@ -286,6 +304,7 @@ app.get("/account", (req, res) => {
         res.redirect("/");
     }
 });
+
 
 app.get("/account/update", (req, res) => {
     if (req.session.user) {
@@ -295,6 +314,7 @@ app.get("/account/update", (req, res) => {
     }
 });
 
+
 app.get("/enrolled-courses", (req, res) => {
     if (req.session.user) {
         res.sendFile(path.join(__dirname, "/views/enrolled-courses.html"));
@@ -303,6 +323,7 @@ app.get("/enrolled-courses", (req, res) => {
     }
 });
 
+
 app.get("/browse", (req, res) => {
     if (req.session.user) {
         res.sendFile(path.join(__dirname, "/views/browse.html"));
@@ -310,6 +331,7 @@ app.get("/browse", (req, res) => {
         res.redirect("/");
     }
 });
+
 
 app.get("/browse/courses/:code", (req, res) => {
     if (req.session.user) {
@@ -322,6 +344,7 @@ app.get("/browse/courses/:code", (req, res) => {
 
 // --- // login, logout & registering // all 3 methods sql & xss protected
 
+
 app.get("/login", (req, res) => {
     if (req.session.user) {
        res.redirect("/");
@@ -329,6 +352,7 @@ app.get("/login", (req, res) => {
        res.sendFile(path.join(__dirname, "/views/login.html"));
     }
 });
+
 
 app.get("/register", (req, res) => {
     if (req.session.user) {
@@ -338,10 +362,12 @@ app.get("/register", (req, res) => {
     }
 });
 
+
 app.get("/logout", (req, res) => {
     req.session.user = undefined;
     res.redirect("/")
 });
+
 
 app.post("/register", (req, res) => {
     if (req.body.password == req.body.confirm_password && (req.body.student_number.toString()).length == 7) {
@@ -362,6 +388,7 @@ app.post("/register", (req, res) => {
     }
 });
 
+
 async function createUser (req) {
     var levelProgramme = (req.body.level_programme).split("|");
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -371,6 +398,7 @@ async function createUser (req) {
     db.run("INSERT INTO student VALUES (?, ?, ?, ?, ?, ?)", user);
     db.close();
 }
+
 
 app.post("/login", async (req, res) => {
     const db = new sqlite3.Database(dbfile);
@@ -397,6 +425,8 @@ app.post("/login", async (req, res) => {
 
 // -- // 404 not found
 
+
 app.get('*', function(req, res){
+    req.session.user = undefined;
   res.send("404 NOT FOUND", 404);
 });
