@@ -1,7 +1,7 @@
 /* eslint-env node, es6 */
-const express = require("express");
-const path = require("path");
-const bcrypt = require("bcryptjs");
+const express = require("express");             // is used for the http webserver
+const path = require("path");                   // is used to create absolute paths to resources
+const bcrypt = require("bcryptjs");             // is used to hash
 const session = require("express-session");
 const sqlite3 = require("sqlite3").verbose();
 const morgan = require('morgan');
