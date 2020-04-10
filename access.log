@@ -1256,3 +1256,8 @@ GET / 200 2804 - 5.707 ms
 GET /courses/*/*/*/*/0 304 - - 6.067 ms
 GET / 304 - - 3.991 ms
 GET /courses/*/*/*/*/0 304 - - 4.683 ms
+GET /courses/INFOMLHVL 304 - - 4.024 ms
+GET /enrollable/INFOMLHVL 304 - - 4.046 ms
+GET /reviews/rating/INFOMLHVL 304 - - 7.154 ms
+GET /course-info/INFOMLHVL 304 - - 8.276 ms
+GET /reviews/INFOMLHVL 304 - - 3.840 ms
