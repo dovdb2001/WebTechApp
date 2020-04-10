@@ -30,7 +30,6 @@ function getCourseInfo(course_code) {
     req.open("GET", "/course-info/" + course_code, true);
     req.onreadystatechange = function () {
         if (req.readyState == 4 && req.status == 200) {
-            console.log(JSON.parse(req.responseText));
             addCourse(JSON.parse(req.responseText)[0]);
         }
     }

@@ -12,7 +12,6 @@ function getAccount() {
 }
 
 function draw(account) {
-    console.log(account);
     (document.getElementById("student_number")).append(document.createTextNode(account[0].student_number));
     (document.getElementById("first_name")).append(document.createTextNode(account[0].first_name));
     (document.getElementById("last_name")).append(document.createTextNode(account[0].last_name));
